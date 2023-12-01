@@ -1,0 +1,76 @@
+@page "/registration"
+@using Newtonsoft.Json
+@using System.Text
+
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Registration</h4>
+            </div>
+            <div class="card-body">
+                <input type="text" class="form-control" placeholder="username" @bind="_username"/><br/>
+                <input type="password" class="form-control" placeholder="password" @bind="_password"/><br/>
+                <input type="password" class="form-control" placeholder="confirm password" @bind="_confirmPassword"/>
+                <div class="alert alert-danger @_showErrorClass">Password doesn't confirm</div>
+            </div>
+            <div class="card-footer">
+                <input type="button" class="btn btn-success" value="Sign Up" @onclick="HandleSubmitClick"/>
+            </div>
+            <h5>@_jsonResponse</h5>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+
+
+@code {
+    private string _username;
+    private string _password;
+    private string _confirmPassword;
+    private string _showErrorClass = "d-none";
+    private string _jsonResponse;
+    
+    private HttpClient _httpClient = new HttpClient();
+
+    private async Task HandleSubmitClick(MouseEventArgs e)
+    {
+        _showErrorClass = String.Empty;
+        
+        StateHasChanged();
+        if (e.Button != 0)
+        {
+            return;
+        }
+        if (_password != _confirmPassword)
+        {
+            _showErrorClass = String.Empty;
+            StateHasChanged();
+            return;
+        }
+        else
+        {
+            _showErrorClass = "d-none";
+        }
+
+        var json = JsonConvert.SerializeObject(new
+        {
+            Username = _username,
+            Password = _password
+        });
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        content.Headers.Add("host","https://localhost:7115");
+        content.Headers.Add("accept","*/*");
+        var response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/SignUp", new
+        {
+            Username = _username,
+            Password = _password
+        });
+        if (response.IsSuccessStatusCode)
+        {
+            _jsonResponse = await response.Content.ReadAsStringAsync();
+        }
+    }
+}
