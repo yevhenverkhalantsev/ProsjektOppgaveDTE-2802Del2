@@ -38,4 +38,11 @@ public interface IBlogService
     Task DeleteComment(int id, IPrincipal principal);
 
     CommentViewModel GetCommentViewModel(int id);
+    
+    
+    // Tags
+    
+    
+    Task SaveTag(Tag tag, IPrincipal principal);
+    
 }

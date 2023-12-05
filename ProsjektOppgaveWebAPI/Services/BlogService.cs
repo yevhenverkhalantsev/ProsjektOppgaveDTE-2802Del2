@@ -215,7 +215,7 @@ public class BlogService : IBlogService
         if (comment.Owner == user)
         {
             _db.Comment.Remove(comment);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         else
         {
@@ -240,5 +240,17 @@ public class BlogService : IBlogService
     
 
     // TAGS
-    // TODO Add Tag methods
+    public async Task SaveTag(Tag tag, IPrincipal principal)
+    {
+        var user = await _manager.FindByNameAsync(principal.Identity.Name);
+
+        var existingTag = _db.Tag.Find(tag.Id);
+        if (existingTag != null)
+        {
+            _db.Entry(existingTag).State = EntityState.Detached;
+        }
+
+        _db.Tag.Add(tag);
+        await _db.SaveChangesAsync();
+    }
 }

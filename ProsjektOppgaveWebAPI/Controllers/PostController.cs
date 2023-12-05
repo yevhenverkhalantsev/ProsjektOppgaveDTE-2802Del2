@@ -37,8 +37,33 @@ public class PostController : ControllerBase
         await _service.SavePost(post, User);
         return CreatedAtAction("GetPosts", new { id = post.BlogId }, post);
     }
-    
-    
 
+    
+    [HttpPut("{id:int}")]
+    public IActionResult Update([FromRoute] int id, [FromBody] Post post)
+    {
+        if (id != post.PostId)
+            return BadRequest();
 
+        var existingPost = _service.GetPostViewModel(id);
+        if (existingPost is null)
+            return NotFound();
+
+        _service.SavePost(post, User);
+
+        return NoContent();
+    }
+
+    
+    [HttpDelete("{id:int}")]
+    public IActionResult Delete([FromRoute] int id)
+    {
+        var post = _service.GetPostViewModel(id);
+        if (post is null)
+            return NotFound();
+
+        _service.DeletePost(id, User);
+
+        return NoContent();
+    }
 }
