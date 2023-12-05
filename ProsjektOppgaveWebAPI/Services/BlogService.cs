@@ -108,7 +108,7 @@ public class BlogService : IBlogService
     
     
     // POSTS
-    public IEnumerable<Post> GetPostsForBlog(int blogId)
+    public async Task<IEnumerable<Post>> GetPostsForBlog(int blogId)
     {
         try
         {
@@ -127,27 +127,6 @@ public class BlogService : IBlogService
         
             return new List<Post>();
         }
-    }
-    
-    public PostViewModel GetPostViewModel()
-    {
-        _postViewModel = new PostViewModel();
-        return _postViewModel;
-    }
-
-    public PostViewModel GetPostViewModel(int id)
-    {
-        var post = _db.Post.Find(id);
-        if (post == null) return null;
-    
-        _postViewModel = new PostViewModel
-        {
-            PostId = post.PostId,
-            Title = post.Title,
-            Content = post.Content,
-            BlogId = post.BlogId
-        };
-        return _postViewModel;
     }
     
     public async Task SavePost(Post post, IPrincipal principal)
@@ -183,6 +162,27 @@ public class BlogService : IBlogService
         {
             throw new UnauthorizedAccessException("You are not the owner of this post.");
         }
+    }
+    
+    public PostViewModel GetPostViewModel()
+    {
+        _postViewModel = new PostViewModel();
+        return _postViewModel;
+    }
+
+    public PostViewModel GetPostViewModel(int id)
+    {
+        var post = _db.Post.Find(id);
+        if (post == null) return null;
+    
+        _postViewModel = new PostViewModel
+        {
+            PostId = post.PostId,
+            Title = post.Title,
+            Content = post.Content,
+            BlogId = post.BlogId
+        };
+        return _postViewModel;
     }
     
     
