@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
@@ -18,7 +18,7 @@ public class AuthController : ControllerBase
     
     [HttpPost]
     [Route("SignUp")]
-    public async Task<IActionResult> SignUp([FromBody] UserEntity vm)
+    public async Task<IActionResult> SignUp([FromBody] IdentityUser vm)
     {
         var response = await _jwtService.GenerateToken(vm);
         if (response.IsError)

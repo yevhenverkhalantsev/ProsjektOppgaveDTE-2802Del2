@@ -1,10 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ProsjektOppgaveWebAPI.Common;
-using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Services.JwtServices.Models;
 using ProsjektOppgaveWebAPI.Services.Response;
 
@@ -19,20 +19,20 @@ public class JwtService: IJwtService
         _jwtOptions = jwtOptions.CurrentValue;
     }
     
-    public async Task<ResponseService<string>> GenerateToken(UserEntity userEntity)
+    public async Task<ResponseService<string>> GenerateToken(IdentityUser user)
     {
-        byte[] byteKey = Encoding.UTF8.GetBytes(_jwtOptions.Key);
-        SymmetricSecurityKey securityKey = new SymmetricSecurityKey(byteKey);
+        var byteKey = Encoding.UTF8.GetBytes(_jwtOptions.Key);
+        var securityKey = new SymmetricSecurityKey(byteKey);
         
-        SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        List<Claim> claims = await GetClaims(userEntity);
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var claims = await GetClaims(user);
 
-        JwtSecurityToken jwtToken = new JwtSecurityToken(
+        var jwtToken = new JwtSecurityToken(
             claims: claims,
             expires: DateTime.Now.AddHours(_jwtOptions.ExpirationHours),
             signingCredentials: credentials);
         
-        JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+        var tokenHandler = new JwtSecurityTokenHandler();
         
         try
         {
@@ -44,12 +44,12 @@ public class JwtService: IJwtService
         }
     }
 
-    public async Task<List<Claim>> GetClaims(UserEntity userEntity)
+    public async Task<List<Claim>> GetClaims(IdentityUser user)
     {
         return new List<Claim>()
         {
-            new Claim("Id", userEntity.Id.ToString()),
-            new Claim("Username", userEntity.Username),
+            new Claim("Id", user.Id),
+            new Claim("Username", user.UserName)
         };
     }
 }

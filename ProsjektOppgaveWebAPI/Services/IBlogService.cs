@@ -1,8 +1,8 @@
 using System.Security.Principal;
-using BlogProject.Models.ViewModel;
-using BlogProject.Models;
+using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Models.ViewModel;
 
-namespace BlogProject.Services;
+namespace ProsjektOppgaveWebAPI.Services;
 
 public interface IBlogService
 {

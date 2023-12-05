@@ -1,6 +1,4 @@
-using BlogProject.Models;
-
-namespace BlogProject.Models.ViewModel;
+namespace ProsjektOppgaveWebAPI.Models.ViewModel;
 
 public class PostCommentViewModel
 {

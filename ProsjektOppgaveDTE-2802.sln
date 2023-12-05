@@ -7,14 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveBlazor", "Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI", "ProsjektOppgaveWebAPI\ProsjektOppgaveWebAPI.csproj", "{2C1F0314-C233-4208-8A26-CE0DCCFDA6CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI.Database", "ProsjektOppgaveWebAPI.Database\ProsjektOppgaveWebAPI.Database.csproj", "{9892C1F9-420A-4ED5-A862-0FA4B94132B2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI.EntityFramework", "ProsjektOppgaveWebAPI.EntityFramework\ProsjektOppgaveWebAPI.EntityFramework.csproj", "{FDA662DE-4944-4BC7-8D96-F0958AF32ABD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI.Services", "ProsjektOppgaveWebAPI.Services\ProsjektOppgaveWebAPI.Services.csproj", "{D4207EF0-8A1A-47F9-A4EE-034C92004C46}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI.Common", "ProsjektOppgaveWebAPI.Common\ProsjektOppgaveWebAPI.Common.csproj", "{116B3D66-3B1D-441E-9469-1197028548AE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,22 +21,6 @@ Global
 		{2C1F0314-C233-4208-8A26-CE0DCCFDA6CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C1F0314-C233-4208-8A26-CE0DCCFDA6CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C1F0314-C233-4208-8A26-CE0DCCFDA6CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9892C1F9-420A-4ED5-A862-0FA4B94132B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9892C1F9-420A-4ED5-A862-0FA4B94132B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9892C1F9-420A-4ED5-A862-0FA4B94132B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9892C1F9-420A-4ED5-A862-0FA4B94132B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDA662DE-4944-4BC7-8D96-F0958AF32ABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDA662DE-4944-4BC7-8D96-F0958AF32ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FDA662DE-4944-4BC7-8D96-F0958AF32ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FDA662DE-4944-4BC7-8D96-F0958AF32ABD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4207EF0-8A1A-47F9-A4EE-034C92004C46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4207EF0-8A1A-47F9-A4EE-034C92004C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4207EF0-8A1A-47F9-A4EE-034C92004C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4207EF0-8A1A-47F9-A4EE-034C92004C46}.Release|Any CPU.Build.0 = Release|Any CPU
-		{116B3D66-3B1D-441E-9469-1197028548AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{116B3D66-3B1D-441E-9469-1197028548AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{116B3D66-3B1D-441E-9469-1197028548AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{116B3D66-3B1D-441E-9469-1197028548AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

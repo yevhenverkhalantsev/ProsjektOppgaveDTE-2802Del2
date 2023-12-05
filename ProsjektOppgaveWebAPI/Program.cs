@@ -1,8 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ProsjektOppgaveWebAPI.EntityFramework;
+using ProsjektOppgaveWebAPI.Data;
+using ProsjektOppgaveWebAPI.Services;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices.Models;
 
@@ -23,7 +25,11 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration["ConnectionStrings:SqliteConnection"]));
+// Db Connection
+services.AddDbContext<BlogDbContext>(options => 
+    options.UseSqlite(builder.Configuration["ConnectionStrings:SqliteConnection"]));
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<BlogDbContext>();
 
 services.AddAuthentication(options =>
     {
@@ -35,7 +41,7 @@ services.AddAuthentication(options =>
     {
         options.RequireHttpsMetadata = false;
 
-        byte[] byteKey = Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtOptions:Key").Value);
+        var byteKey = Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtOptions:Key").Value);
 
         options.TokenValidationParameters = new TokenValidationParameters()
         {
@@ -49,6 +55,7 @@ services.AddAuthentication(options =>
 services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
 services.AddTransient<IJwtService, JwtService>();
+builder.Services.AddTransient<IBlogService, BlogService>();
 
 var app = builder.Build();
 

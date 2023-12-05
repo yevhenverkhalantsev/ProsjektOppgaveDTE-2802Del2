@@ -1,4 +1,4 @@
-namespace BlogProject.Models;
+namespace ProsjektOppgaveWebAPI.Models;
 
 public class BlogTagRelations
 {

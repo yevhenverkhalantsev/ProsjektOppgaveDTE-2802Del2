@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ProsjektOppgaveDTE-2802\ProsjektOppgaveBlazor.csproj" />
       <ProjectReference Include="..\ProsjektOppgaveWebAPI.Common\ProsjektOppgaveWebAPI.Common.csproj" />
-      <ProjectReference Include="..\ProsjektOppgaveWebAPI.EntityFramework\ProsjektOppgaveWebAPI.EntityFramework.csproj" />
     </ItemGroup>
 
     <ItemGroup>

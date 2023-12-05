@@ -1,9 +1,9 @@
-using BlogProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ProsjektOppgaveWebAPI.Models;
 
-namespace BlogProject.Data;
+namespace ProsjektOppgaveWebAPI.Data;
 
 public class BlogDbContext : IdentityDbContext<IdentityUser>
 {
@@ -35,5 +35,24 @@ public class BlogDbContext : IdentityDbContext<IdentityUser>
             .HasOne(bt => bt.Tag)
             .WithMany(t => t.BlogTags)
             .HasForeignKey(bt => bt.TagId);
+        
+        
+        
+        // SEEDING PREPARATION
+        var hasher = new PasswordHasher<IdentityUser>();
+        
+        var adminUser = new IdentityUser
+        {
+            UserName = "admin",
+            NormalizedUserName = "ADMIN",
+            Email = "admin@example.com",
+            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+            EmailConfirmed = true,
+            PasswordHash = hasher.HashPassword(null, "AdminPassword123!"),
+            SecurityStamp = string.Empty
+        };
+        
+        // SEEDING
+        builder.Entity<IdentityUser>().HasData(adminUser);
     }
 }

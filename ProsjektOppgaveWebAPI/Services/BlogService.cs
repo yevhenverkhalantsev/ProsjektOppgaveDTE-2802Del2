@@ -1,11 +1,11 @@
 using System.Security.Principal;
-using BlogProject.Models.ViewModel;
-using BlogProject.Data;
-using BlogProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ProsjektOppgaveWebAPI.Data;
+using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Models.ViewModel;
 
-namespace BlogProject.Services;
+namespace ProsjektOppgaveWebAPI.Services;
 
 public class BlogService : IBlogService
 {

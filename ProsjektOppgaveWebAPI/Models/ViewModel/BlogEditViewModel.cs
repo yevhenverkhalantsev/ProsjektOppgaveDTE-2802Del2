@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BlogProject.Models.ViewModel;
+namespace ProsjektOppgaveWebAPI.Models.ViewModel;
 
 public class BlogViewModel
 {

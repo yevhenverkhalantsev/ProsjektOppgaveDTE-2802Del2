@@ -1,8 +1,8 @@
-using BlogProject.Models;
-using BlogProject.Services;
 using Microsoft.AspNetCore.Mvc;
+using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Services;
 
-namespace BlogProject.Controllers;
+namespace ProsjektOppgaveWebAPI.Controllers;
 
 
 [Route("/[controller]")]

@@ -1,4 +1,4 @@
-namespace BlogProject.Models.ViewModel;
+namespace ProsjektOppgaveWebAPI.Models.ViewModel;
 
 public class CommentViewModel
 {
