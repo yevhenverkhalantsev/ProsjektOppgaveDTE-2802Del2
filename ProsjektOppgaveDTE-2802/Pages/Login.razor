@@ -1,6 +1,58 @@
-@page "/Login"
-<h3>Login</h3>
+@page "/login"
+
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+
+@using ProsjektOppgaveBlazor.data.Models.ViewModel
+@using ProsjektOppgaveBlazor.AuthProviders
+
+<PageTitle>Register</PageTitle>
+<h3>Register</h3>
+<input type="text" class="form-control" @bind="loginViewModel.Username">Username</input>
+<input type="password" class="form-control" @bind="loginViewModel.Password">Password</input>
+<p>Username: @userName</p>
+<p>Password: @password</p>
+
+<p>Error: @Error</p>
+
+
+<input type="button" class="btn btn-primary" value="Register" @onclick="HandleRegistration" />
+@* <input type="button" class="btn btn-primary" value="Login" @onclick="() => BlazorService.LoginUser(userName, password)" /> *@
+
+
 
 @code {
+
+    private LoginViewModel loginViewModel = new LoginViewModel();
     
+    
+    
+    private bool ShowError { get; set; }
+    private string Error { get; set; }
+    private string userName { get; set; }
+    private string email { get; set; }
+    private string password { get; set; }
+
+    private async Task HandleRegistration()
+    {
+        
+        ShowError = false;
+        
+        var result = await AuthenticationService.Login(loginViewModel);
+
+        if (result.success)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        
+
+
+
+    }
+    
+    
+
+
+
+
 }

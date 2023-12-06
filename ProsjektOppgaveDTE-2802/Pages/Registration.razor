@@ -1,6 +1,10 @@
 @page "/registration"
 @using Newtonsoft.Json
 @using System.Text
+@using ProsjektOppgaveBlazor.data.Models.ViewModel
+@using ProsjektOppgaveBlazor.AuthProviders
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
 
 <div class="row">
     <div class="col-md-4">
@@ -11,15 +15,13 @@
                 <h4>Registration</h4>
             </div>
             <div class="card-body">
-                <input type="text" class="form-control" placeholder="username" @bind="_username"/><br/>
-                <input type="password" class="form-control" placeholder="password" @bind="_password"/><br/>
-                <input type="password" class="form-control" placeholder="confirm password" @bind="_confirmPassword"/>
-                <div class="alert alert-danger @_showErrorClass">Password doesn't confirm</div>
+                <input type="text" class="form-control" placeholder="username" @bind="RegisterViewModel.username"/><br/>
+                <input type="email" class="form-control" placeholder="email" @bind="RegisterViewModel.email"/>
+                <input type="password" class="form-control" placeholder="password" @bind="RegisterViewModel.password"/><br/>
             </div>
             <div class="card-footer">
-                <input type="button" class="btn btn-success" value="Sign Up" @onclick="HandleSubmitClick"/>
+                <input type="button" class="btn btn-success" value="Sign Up" @onclick="HandleRegistration"/>
             </div>
-            <h5>@_jsonResponse</h5>
         </div>
     </div>
     <div class="col-md-4"></div>
@@ -27,50 +29,30 @@
 
 
 @code {
-    private string _username;
-    private string _password;
-    private string _confirmPassword;
-    private string _showErrorClass = "d-none";
-    private string _jsonResponse;
+    private RegisterViewModel RegisterViewModel = new RegisterViewModel();
     
-    private HttpClient _httpClient = new HttpClient();
+    private bool ShowError { get; set; }
+    private string Error { get;set; }
+    private string userName { get; set; }
+    private string email { get; set; }
+    private string password { get; set; }
 
-    private async Task HandleSubmitClick(MouseEventArgs e)
+    private async Task HandleRegistration()
     {
-        _showErrorClass = String.Empty;
+        ShowError = false;
         
-        StateHasChanged();
-        if (e.Button != 0)
+        var result = await AuthenticationService.RegisterUser(RegisterViewModel);
+
+        if (result.success)
         {
-            return;
-        }
-        if (_password != _confirmPassword)
-        {
-            _showErrorClass = String.Empty;
-            StateHasChanged();
-            return;
+            NavigationManager.NavigateTo("/login");
         }
         else
         {
-            _showErrorClass = "d-none";
-        }
-
-        var json = JsonConvert.SerializeObject(new
-        {
-            Username = _username,
-            Password = _password
-        });
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        content.Headers.Add("host","https://localhost:7115");
-        content.Headers.Add("accept","*/*");
-        var response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/SignUp", new
-        {
-            Username = _username,
-            Password = _password
-        });
-        if (response.IsSuccessStatusCode)
-        {
-            _jsonResponse = await response.Content.ReadAsStringAsync();
+            Error = result.message;
+            ShowError = true;
         }
     }
+    
+
 }

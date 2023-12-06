@@ -42,6 +42,7 @@ public class AuthController : ControllerBase
             
             return Ok(new
             {
+                success = true,
                 token = new JwtSecurityTokenHandler().WriteToken(token),
             });
         }

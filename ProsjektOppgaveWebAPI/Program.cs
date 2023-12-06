@@ -29,7 +29,8 @@ services.AddSwaggerGen();
 services.AddDbContext<BlogDbContext>(options => 
     options.UseSqlite(builder.Configuration["ConnectionStrings:SqliteConnection"]));
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<BlogDbContext>();
+    .AddEntityFrameworkStores<BlogDbContext>()
+    .AddDefaultTokenProviders();
 
 services.AddAuthentication(options =>
     {

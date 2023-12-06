@@ -1,0 +1,15 @@
+﻿@page "/logout"
+@using ProsjektOppgaveBlazor.AuthProviders
+
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+
+@code {
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthenticationService.Logout();
+        NavigationManager.NavigateTo("/");
+    }
+    
+}
