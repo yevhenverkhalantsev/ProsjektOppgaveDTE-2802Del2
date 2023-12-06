@@ -18,17 +18,24 @@ else
             <EditForm Model="@blog" OnValidSubmit="Save">
                 <DataAnnotationsValidator/>
                 <div class="form-group">
+                    <div>
+                        <label for="Name">Blog Name:</label>
+                        <InputText class="form-control" @bind-Value="blog.Name"/>
+                        <ValidationMessage For="@(()=>blog.Name)"/>
+                    </div>
+                    <div class="form-check form-switch">
+                        <label for="Status">Allow post and comments</label>
+                        <InputCheckbox class="form-check-input" @bind-Value="Status"/>
+                        <ValidationMessage For="@(()=>blog.Status)" />
+                    </div>
+                    @*@if (blog.BlogTags != null)
+                    {
                         <div>
-                            <label for="Name">Blog Name:</label>
-                            <InputText class="form-control" @bind-Value="blog.Name"/>
-                            <ValidationMessage For="@(()=>blog.Name)"/>
+                            <label for="Tags">Tags:</label>
+                            <textarea class="form-control" readonly>@showTags()</textarea>
 
                         </div>
-                        <div class="form-check form-switch">
-                            <label for="Status">Allow post and comments</label>
-                            <InputCheckbox class="form-check-input" @bind-Value="Status"/>
-                            <ValidationMessage For="@(()=>blog.Status)" />
-                        </div>
+                    }*@
                         <button class="btn btn-primary" type="submit">Save</button>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 </div>
@@ -68,6 +75,28 @@ else
         }
     }
 
+    @*string showTags()
+    {
+        string tags = "";
+        int length = blog.BlogTags.Count();
+        int index = 0;
+        foreach (var tag in blog.BlogTags)
+        {
+            if (length > 0)
+            {
+                tags += tag + ", ";
+                index += 1;
+            }
+            else
+            {
+                tags += tag;
+            }
+
+
+        }
+        return tags;
+    }*@
+
     private Blog blog;
     protected override async Task OnInitializedAsync()
     {
@@ -76,31 +105,7 @@ else
 
     private async Task Save()
     {
-        string dateStr = "2023-12-06T04:26:57.086Z";
-        DateTimeOffset lockoutEnd = DateTimeOffset.Parse(dateStr);
-        var hasher = new PasswordHasher<IdentityUser>();
-        blog.OwnerId = "57365b7a-5844-4312-a38d-fbb40efbdf08";
-        blog.Owner = new IdentityUser{
-            UserName = "admin",
-            NormalizedUserName = "ADMIN",
-            Email = "admin@example.com",
-            NormalizedEmail = "ADMIN@EXAMPLE.COM",
-            EmailConfirmed = true,
-            PasswordHash = hasher.HashPassword(null, "AdminPassword123!"),
-            SecurityStamp = string.Empty,
-            ConcurrencyStamp = string.Empty,
-            PhoneNumber = string.Empty,
-            PhoneNumberConfirmed = false,
-            TwoFactorEnabled = false,
-                LockoutEnd = lockoutEnd,
-            LockoutEnabled = false,
-            AccessFailedCount = 0
-
-
-        };
         var response = await BlogHttpClient.PutAsJsonAsync($"https://localhost:7022/Blog/{BlogId}", blog);
-       
-        
     }
 
 }
