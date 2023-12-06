@@ -31,6 +31,46 @@ public class CommentController : ControllerBase
     }
     
     
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] Comment comment)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var post = _service.GetPostViewModel(comment.PostId);
+        
+        await _service.SaveComment(comment, User);
+        return CreatedAtAction("GetComment", new { id = comment.PostId }, comment);
+    }
     
     
+    [HttpPut("{id:int}")]
+    public IActionResult Update([FromRoute] int id, [FromBody] Comment comment)
+    {
+        if (id != comment.CommentId)
+            return BadRequest();
+
+        var existingComment = _service.GetCommentViewModel(id);
+        if (existingComment is null)
+            return NotFound();
+
+        _service.SaveComment(comment, User);
+
+        return NoContent();
+    }
+    
+    
+    [HttpDelete("{id:int}")]
+    public IActionResult Delete([FromRoute] int id)
+    {
+        var comment = _service.GetCommentViewModel(id);
+        if (comment is null)
+            return NotFound();
+
+        _service.DeleteComment(id, User);
+
+        return NoContent();
+    }
 }
