@@ -4,7 +4,7 @@ using ProsjektOppgaveWebAPI.Services;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
-[Route("/api/[controller]")]
+[Route("/[controller]")]
 [ApiController]
 public class TagController : ControllerBase
 {
