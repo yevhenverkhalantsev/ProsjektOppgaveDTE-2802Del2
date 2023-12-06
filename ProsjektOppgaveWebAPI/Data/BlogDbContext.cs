@@ -24,18 +24,7 @@ public class BlogDbContext : IdentityDbContext<IdentityUser>
         base.OnModelCreating(builder);
         
         builder.Entity<BlogTagRelations>()
-            .HasKey(bt => new { bt.BlogId, bt.TagId }); // composite key
-
-        builder.Entity<BlogTagRelations>()
-            .HasOne(bt => bt.Blog)
-            .WithMany(b => b.BlogTags)
-            .HasForeignKey(bt => bt.BlogId);
-
-        builder.Entity<BlogTagRelations>()
-            .HasOne(bt => bt.Tag)
-            .WithMany(t => t.BlogTags)
-            .HasForeignKey(bt => bt.TagId);
-        
+            .HasKey(bt => new { bt.BlogId, bt.TagId });
         
         // SEEDING PREPARATION
         var hasher = new PasswordHasher<IdentityUser>();
