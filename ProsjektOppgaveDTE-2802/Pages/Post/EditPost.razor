@@ -1,0 +1,80 @@
+﻿
+@page "/post/{PostId:int}"
+
+@using ProsjektOppgaveBlazor.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject HttpClient BlogHttpClient
+
+<h3>Edit post</h3>
+
+@if (post == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-3">
+            <EditForm Model="@post" OnValidSubmit="Save">
+                <DataAnnotationsValidator/>
+                <div class="form-group">
+                        <div>
+                            <label for="Name">Post Title:</label>
+                        <InputText class="form-control" @bind-Value="post.Title" />
+                        <ValidationMessage For="@(()=>post.Title)" />
+                        </div>
+                        <div>
+                            <label for="Content">Post Content:</label>
+                            <InputText class="form-control" @bind-Value="post.Content" />
+                            <ValidationMessage For="@(()=>post.Content)" />
+                        </div>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int PostId { get; set; }
+
+    private Post post;
+    protected override async Task OnInitializedAsync()
+    {
+        post = await BlogHttpClient.GetFromJsonAsync<Post>($"https://localhost:7022/Post/{PostId}");
+    }
+
+    private async Task Save()
+    {
+        string dateStr = "2023-12-06T04:26:57.086Z";
+        DateTimeOffset lockoutEnd = DateTimeOffset.Parse(dateStr);
+        var hasher = new PasswordHasher<IdentityUser>();
+        post.OwnerId = "57365b7a-5844-4312-a38d-fbb40efbdf08";
+        post.Owner = new IdentityUser
+            {
+            UserName = "admin",
+            NormalizedUserName = "ADMIN",
+            Email = "admin@example.com",
+            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+            EmailConfirmed = true,
+            PasswordHash = hasher.HashPassword(null, "AdminPassword123!"),
+            SecurityStamp = string.Empty,
+            ConcurrencyStamp = string.Empty,
+            PhoneNumber = string.Empty,
+            PhoneNumberConfirmed = false,
+            TwoFactorEnabled = false,
+                LockoutEnd = lockoutEnd,
+            LockoutEnabled = false,
+            AccessFailedCount = 0
+
+
+        };
+        var response = await BlogHttpClient.PutAsJsonAsync($"https://localhost:7022/Post/{PostId}", post);
+       
+        
+    }
+
+}

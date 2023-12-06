@@ -4,7 +4,7 @@ using ProsjektOppgaveWebAPI.Services;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
-[Route("/api/[controller]")]
+[Route("/[controller]")]
 [ApiController]
 public class BlogController : ControllerBase
 {
@@ -54,7 +54,7 @@ public class BlogController : ControllerBase
 
     
     [HttpPut("{id:int}")]
-    public IActionResult Update([FromRoute] int id, [FromBody] Blog blog)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Blog blog)
     {
         if (id != blog.BlogId)
             return BadRequest();
@@ -63,7 +63,7 @@ public class BlogController : ControllerBase
         if (existingBlog is null)
             return NotFound();
         
-        _service.Save(blog, User);
+        await _service.Save(blog, User);
 
         return NoContent();
     }
