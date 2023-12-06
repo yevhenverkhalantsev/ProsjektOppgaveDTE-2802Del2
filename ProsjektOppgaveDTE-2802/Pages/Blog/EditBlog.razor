@@ -18,17 +18,24 @@ else
             <EditForm Model="@blog" OnValidSubmit="Save">
                 <DataAnnotationsValidator/>
                 <div class="form-group">
+                    <div>
+                        <label for="Name">Blog Name:</label>
+                        <InputText class="form-control" @bind-Value="blog.Name"/>
+                        <ValidationMessage For="@(()=>blog.Name)"/>
+                    </div>
+                    <div class="form-check form-switch">
+                        <label for="Status">Allow post and comments</label>
+                        <InputCheckbox class="form-check-input" @bind-Value="Status"/>
+                        <ValidationMessage For="@(()=>blog.Status)" />
+                    </div>
+                    @*@if (blog.BlogTags != null)
+                    {
                         <div>
-                            <label for="Name">Blog Name:</label>
-                            <InputText class="form-control" @bind-Value="blog.Name"/>
-                            <ValidationMessage For="@(()=>blog.Name)"/>
+                            <label for="Tags">Tags:</label>
+                            <textarea class="form-control" readonly>@showTags()</textarea>
 
                         </div>
-                        <div class="form-check form-switch">
-                            <label for="Status">Allow post and comments</label>
-                            <InputCheckbox class="form-check-input" @bind-Value="Status"/>
-                            <ValidationMessage For="@(()=>blog.Status)" />
-                        </div>
+                    }*@
                         <button class="btn btn-primary" type="submit">Save</button>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 </div>
@@ -67,6 +74,28 @@ else
             }
         }
     }
+
+    @*string showTags()
+    {
+        string tags = "";
+        int length = blog.BlogTags.Count();
+        int index = 0;
+        foreach (var tag in blog.BlogTags)
+        {
+            if (length > 0)
+            {
+                tags += tag + ", ";
+                index += 1;
+            }
+            else
+            {
+                tags += tag;
+            }
+
+
+        }
+        return tags;
+    }*@
 
     private Blog blog;
     protected override async Task OnInitializedAsync()
