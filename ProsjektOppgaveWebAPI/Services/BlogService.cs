@@ -117,7 +117,6 @@ public class BlogService : IBlogService
             var posts = _db.Post
                 .Where(p => p.BlogId == blogId)
                 .Include(p => p.Owner)
-                .Include(p => p.Comments) 
                 .ToList();
 
             return posts;
