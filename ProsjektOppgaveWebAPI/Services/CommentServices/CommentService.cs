@@ -38,6 +38,15 @@ public class CommentService : ICommentService
             return new List<Comment>();
         }
     }
+
+    public Comment? GetComment(int id)
+    {
+        var c = (from comment in _db.Comment
+                where comment.CommentId == id
+                select comment)
+            .FirstOrDefault();
+        return c;
+    }
     
     public async Task Save(Comment comment, IPrincipal principal)
     {

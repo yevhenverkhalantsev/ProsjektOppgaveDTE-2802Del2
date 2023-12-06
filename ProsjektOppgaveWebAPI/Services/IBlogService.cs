@@ -22,6 +22,8 @@ public interface IBlogService
     
     // Post
     Task<IEnumerable<Post>> GetPostsForBlog(int blogId);
+
+    Post? GetPost(int id);
     
     Task SavePost(Post post, IPrincipal principal);
 

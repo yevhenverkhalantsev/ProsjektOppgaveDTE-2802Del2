@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Models.ViewModel;
@@ -25,12 +27,13 @@ public class CommentController : ControllerBase
     
     
     [HttpGet("{id:int}")]
-    public CommentViewModel GetComment([FromRoute] int id)
+    public Comment? GetComment([FromRoute] int id)
     {
-        return _service.GetCommentViewModel(id);
+        return _service.GetComment(id);
     }
     
     
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Comment comment)
     {
@@ -44,15 +47,22 @@ public class CommentController : ControllerBase
     }
     
     
+    [Authorize]
     [HttpPut("{id:int}")]
     public IActionResult Update([FromRoute] int id, [FromBody] Comment comment)
     {
         if (id != comment.CommentId)
             return BadRequest();
 
-        var existingComment = _service.GetCommentViewModel(id);
+        var existingComment = _service.GetComment(id);
         if (existingComment is null)
             return NotFound();
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (existingComment.OwnerId != userId)
+        {
+            return Unauthorized();
+        }
 
         _service.Save(comment, User);
 
@@ -60,12 +70,19 @@ public class CommentController : ControllerBase
     }
     
     
+    [Authorize]
     [HttpDelete("{id:int}")]
     public IActionResult Delete([FromRoute] int id)
     {
-        var comment = _service.GetCommentViewModel(id);
+        var comment = _service.GetComment(id);
         if (comment is null)
             return NotFound();
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (comment.OwnerId != userId)
+        {
+            return Unauthorized();
+        }
 
         _service.Delete(id, User);
 

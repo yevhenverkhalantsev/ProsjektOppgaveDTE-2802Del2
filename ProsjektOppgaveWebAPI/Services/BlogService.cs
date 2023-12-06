@@ -110,6 +110,15 @@ public class BlogService : IBlogService
     
     
     // POSTS
+    public Post? GetPost(int id)
+    {
+        var p = (from post in _db.Post
+                where post.PostId == id
+                select post)
+            .FirstOrDefault();
+        return p;
+    }
+    
     public async Task<IEnumerable<Post>> GetPostsForBlog(int blogId)
     {
         try

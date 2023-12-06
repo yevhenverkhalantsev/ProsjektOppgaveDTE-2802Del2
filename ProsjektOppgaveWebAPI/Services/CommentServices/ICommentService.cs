@@ -7,6 +7,8 @@ namespace ProsjektOppgaveWebAPI.Services.CommentServices;
 public interface ICommentService
 {
     Task<IEnumerable<Comment>> GetCommentsForPost(int postId);
+
+    Comment? GetComment(int id);
     
     Task Save(Comment comment, IPrincipal principal);
 

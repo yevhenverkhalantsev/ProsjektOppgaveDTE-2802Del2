@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Services;
@@ -39,6 +41,7 @@ public class BlogController : ControllerBase
     }
 
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Blog blog)
     {
@@ -52,7 +55,8 @@ public class BlogController : ControllerBase
         return CreatedAtAction("Get", new { id = blog.BlogId }, blog);
     }
 
-    
+
+    [Authorize]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Blog blog)
     {
@@ -60,8 +64,15 @@ public class BlogController : ControllerBase
             return BadRequest();
 
         var existingBlog = _service.GetBlog(id);
+        
         if (existingBlog is null)
             return NotFound();
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (existingBlog.OwnerId != userId)
+        {
+            return Unauthorized();
+        }
         
         await _service.Save(blog, User);
 
@@ -69,12 +80,19 @@ public class BlogController : ControllerBase
     }
 
     
+    [Authorize]
     [HttpDelete("{id:int}")]
     public IActionResult Delete([FromRoute] int id)
     {
         var blog = _service.GetBlog(id);
         if (blog is null)
             return NotFound();
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (blog.OwnerId != userId)
+        {
+            return Unauthorized();
+        }
 
         _service.Delete(id, User);
 

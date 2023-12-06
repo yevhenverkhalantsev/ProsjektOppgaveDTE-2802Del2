@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Models;
-using ProsjektOppgaveWebAPI.Services;
 using ProsjektOppgaveWebAPI.Services.TagServices;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
@@ -17,7 +17,7 @@ public class TagController : ControllerBase
     }
 
 
-
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Tag tag)
     {
@@ -30,7 +30,4 @@ public class TagController : ControllerBase
 
         return Ok();
     }
-    
-    
-    
 }
