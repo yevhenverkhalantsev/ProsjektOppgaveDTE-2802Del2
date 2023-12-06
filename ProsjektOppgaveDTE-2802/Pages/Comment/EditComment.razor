@@ -40,35 +40,10 @@ else
     {
         comment = await BlogHttpClient.GetFromJsonAsync<Comment>($"https://localhost:7022/Comment/{CommentId}");
     }
-
+    
     private async Task Save()
     {
-        string dateStr = "2023-12-06T04:26:57.086Z";
-        DateTimeOffset lockoutEnd = DateTimeOffset.Parse(dateStr);
-        var hasher = new PasswordHasher<IdentityUser>();
-        comment.OwnerId = "57365b7a-5844-4312-a38d-fbb40efbdf08";
-        comment.Owner = new IdentityUser
-            {
-            UserName = "admin",
-            NormalizedUserName = "ADMIN",
-            Email = "admin@example.com",
-            NormalizedEmail = "ADMIN@EXAMPLE.COM",
-            EmailConfirmed = true,
-            PasswordHash = hasher.HashPassword(null, "AdminPassword123!"),
-            SecurityStamp = string.Empty,
-            ConcurrencyStamp = string.Empty,
-            PhoneNumber = string.Empty,
-            PhoneNumberConfirmed = false,
-            TwoFactorEnabled = false,
-                LockoutEnd = lockoutEnd,
-            LockoutEnabled = false,
-            AccessFailedCount = 0
-
-
-        };
         var response = await BlogHttpClient.PutAsJsonAsync($"https://localhost:7022/Comment/{CommentId}", comment);
-       
-        
     }
 
 }
