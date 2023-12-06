@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Models.ViewModel;
 using ProsjektOppgaveWebAPI.Services;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
-[Route("/[controller]")]
+[Route("/api/[controller]")]
 [ApiController]
 public class PostController : ControllerBase
 {
@@ -20,6 +21,13 @@ public class PostController : ControllerBase
     public async Task<IEnumerable<Post>> GetPosts(int blogId)
     {
         return await _service.GetPostsForBlog(blogId);
+    }
+    
+    
+    [HttpGet("{id:int}")]
+    public PostViewModel GetPost([FromRoute] int id)
+    {
+        return _service.GetPostViewModel(id);
     }
     
     

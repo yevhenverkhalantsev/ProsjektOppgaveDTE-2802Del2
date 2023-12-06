@@ -21,7 +21,8 @@ services.AddCors(options =>
     });
 });
 
-services.AddControllers();
+services.AddControllers().AddJsonOptions(x =>
+    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -55,7 +56,7 @@ services.AddAuthentication(options =>
 services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
 services.AddTransient<IJwtService, JwtService>();
-builder.Services.AddTransient<IBlogService, BlogService>();
+services.AddTransient<IBlogService, BlogService>();
 
 var app = builder.Build();
 

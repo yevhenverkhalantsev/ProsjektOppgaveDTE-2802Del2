@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProsjektOppgaveWebAPI.Data;
 
@@ -10,9 +11,10 @@ using ProsjektOppgaveWebAPI.Data;
 namespace ProsjektOppgaveWebAPI.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231206091053_secondSetup")]
+    partial class secondSetup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
@@ -132,15 +134,15 @@ namespace ProsjektOppgaveWebAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "faf5ef61-4e84-4353-807b-9dea9d5570b5",
+                            Id = "4d84d438-e8b9-4dca-8767-7d2d1ef842ad",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9e9133dc-3a76-4abc-9708-2695481200de",
+                            ConcurrencyStamp = "dd589d43-9d2c-4dd6-9e1e-fb6cd6221021",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBLFI9//R3wYkJgnxOQIr6QlGeBmOjoHtWFSxou/e+BDQxvXtLqe44UhOeKegxxpEg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHlpG00SBqc/ZB6nFG3FeQCI7TnmQVFYWoDysw0jGWM8u0BsfKtOh0IeLXN4SeBk8w==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -251,21 +253,6 @@ namespace ProsjektOppgaveWebAPI.Migrations
                     b.ToTable("Blog");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
-                {
-                    b.Property<int>("BlogId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("BlogId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("BlogTagRelations");
-                });
-
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>
                 {
                     b.Property<int>("CommentId")
@@ -328,11 +315,16 @@ namespace ProsjektOppgaveWebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("BlogId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BlogId");
 
                     b.ToTable("Tag");
                 });
@@ -399,25 +391,6 @@ namespace ProsjektOppgaveWebAPI.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
-                {
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", "Blog")
-                        .WithMany("BlogTags")
-                        .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Tag", "Tag")
-                        .WithMany("BlogTags")
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Blog");
-
-                    b.Navigation("Tag");
-                });
-
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
@@ -456,21 +429,23 @@ namespace ProsjektOppgaveWebAPI.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Tag", b =>
+                {
+                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("BlogId");
+                });
+
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Blog", b =>
                 {
-                    b.Navigation("BlogTags");
-
                     b.Navigation("Posts");
+
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Post", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Tag", b =>
-                {
-                    b.Navigation("BlogTags");
                 });
 #pragma warning restore 612, 618
         }

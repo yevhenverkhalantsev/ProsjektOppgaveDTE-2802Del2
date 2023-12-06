@@ -42,11 +42,15 @@ public class BlogService : IBlogService
         }
     }
 
-    public Blog GetBlog(int id)
+
+    public Blog? GetBlog(int id)
     {
         var b = (from blog in _db.Blog
             where blog.BlogId == id
-            select blog).FirstOrDefault();
+            select blog)
+            .Include(b => b.BlogTags)
+                .ThenInclude(bt => bt.Tag)
+            .FirstOrDefault();
         return b;
     }
  
@@ -215,7 +219,7 @@ public class BlogService : IBlogService
         if (comment.Owner == user)
         {
             _db.Comment.Remove(comment);
-            await _db.SaveChangesAsync();
+            _db.SaveChanges();
         }
         else
         {
@@ -240,17 +244,13 @@ public class BlogService : IBlogService
     
 
     // TAGS
-    public async Task SaveTag(Tag tag, IPrincipal principal)
+    public async Task SaveTag(Tag tag)
     {
-        var user = await _manager.FindByNameAsync(principal.Identity.Name);
-
         var existingTag = _db.Tag.Find(tag.Id);
-        if (existingTag != null)
+        if (existingTag == null)
         {
-            _db.Entry(existingTag).State = EntityState.Detached;
+            _db.Tag.Add(tag);
+            await _db.SaveChangesAsync();
         }
-
-        _db.Tag.Add(tag);
-        await _db.SaveChangesAsync();
     }
 }
