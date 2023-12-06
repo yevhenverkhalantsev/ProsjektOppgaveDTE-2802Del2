@@ -9,7 +9,7 @@ public interface IBlogService
     // Blog
     Task<IEnumerable<Blog>> GetAllBlogs();
 
-    Blog GetBlog(int id);
+    Blog? GetBlog(int id);
     
     Task Save(Blog blog, IPrincipal principal);
     
@@ -43,6 +43,6 @@ public interface IBlogService
     // Tags
     
     
-    Task SaveTag(Tag tag, IPrincipal principal);
+    Task SaveTag(Tag tag);
     
 }
