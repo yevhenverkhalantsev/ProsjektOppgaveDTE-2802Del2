@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Services;
+using ProsjektOppgaveWebAPI.Services.TagServices;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
@@ -8,9 +9,9 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 [ApiController]
 public class TagController : ControllerBase
 {
-    private readonly IBlogService _service;
+    private readonly ITagService _service;
 
-    public TagController(IBlogService service)
+    public TagController(ITagService service)
     {
         _service = service;
     }
@@ -25,7 +26,7 @@ public class TagController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        await _service.SaveTag(tag);
+        await _service.Save(tag);
 
         return Ok();
     }

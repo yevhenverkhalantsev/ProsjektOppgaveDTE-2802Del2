@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Models.ViewModel;
-using ProsjektOppgaveWebAPI.Services;
+using ProsjektOppgaveWebAPI.Services.CommentServices;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
@@ -9,9 +9,9 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 [ApiController]
 public class CommentController : ControllerBase
 {
-    private readonly IBlogService _service;
+    private readonly ICommentService _service;
 
-    public CommentController(IBlogService service)
+    public CommentController(ICommentService service)
     {
         _service = service;
     }
@@ -38,10 +38,8 @@ public class CommentController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-
-        var post = _service.GetPostViewModel(comment.PostId);
         
-        await _service.SaveComment(comment, User);
+        await _service.Save(comment, User);
         return CreatedAtAction("GetComment", new { id = comment.PostId }, comment);
     }
     
@@ -56,7 +54,7 @@ public class CommentController : ControllerBase
         if (existingComment is null)
             return NotFound();
 
-        _service.SaveComment(comment, User);
+        _service.Save(comment, User);
 
         return NoContent();
     }
@@ -69,7 +67,7 @@ public class CommentController : ControllerBase
         if (comment is null)
             return NotFound();
 
-        _service.DeleteComment(id, User);
+        _service.Delete(id, User);
 
         return NoContent();
     }

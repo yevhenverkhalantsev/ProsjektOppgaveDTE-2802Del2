@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProsjektOppgaveWebAPI.Data;
 using ProsjektOppgaveWebAPI.Services;
+using ProsjektOppgaveWebAPI.Services.CommentServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices.Models;
+using ProsjektOppgaveWebAPI.Services.TagServices;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -56,6 +58,8 @@ services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
 services.AddTransient<IJwtService, JwtService>();
 services.AddTransient<IBlogService, BlogService>();
+services.AddTransient<ICommentService, CommentService>();
+services.AddTransient<ITagService, TagService>();
 
 var app = builder.Build();
 
