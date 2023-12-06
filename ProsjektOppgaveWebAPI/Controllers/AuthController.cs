@@ -1,7 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Models.ViewModel;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
@@ -9,41 +16,74 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IJwtService _jwtService;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IJwtService jwtService)
+    public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration)
     {
-        _jwtService = jwtService;
+        _userManager = userManager;
+        _configuration = configuration;
     }
     
     [HttpPost]
-    [Route("SignUp")]
-    public async Task<IActionResult> SignUp([FromBody] IdentityUser vm)
+    [Route("login")]
+    public async Task<IActionResult> Login([FromBody] LoginViewModel model)
     {
-        var response = await _jwtService.GenerateToken(vm);
-        if (response.IsError)
+        var user = await _userManager.FindByNameAsync(model.Username);
+        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            return BadRequest(new
+            var authClaims = new List<Claim>
             {
-                responseMessage = response.ErrorMessage
-            });
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+            var token = CreateToken(authClaims);
+            await _userManager.UpdateAsync(user);
             
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+            });
         }
-        return Ok(new
-        {
-            success = true,
-            token = response.Value
-        });
+        return Unauthorized();
     }
     
-    [HttpGet]
-    [Route ("/CheckToken")]
-    [Authorize]
-    public async Task<IActionResult> CheckToken()
+    [HttpPost]
+    [Route("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
     {
-        return Ok(new
+        var userExists = await _userManager.FindByNameAsync(model.username);
+        if (userExists != null)
         {
-            success = true
-        });
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Success = false, Message = "User already exists!" });
+        }
+        IdentityUser user = new()
+        {
+            Email = model.email,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = model.username
+        };
+        var result = await _userManager.CreateAsync(user, model.password);
+        if (!result.Succeeded)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Success = false, Message = "User creation failed! Please check user details and try again." });
+        }
+        return Ok(new Response { Success = true, Message = "User created successfully!" });
     }
+    
+    
+    private JwtSecurityToken CreateToken(List<Claim> authClaims)
+    {
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtOptions:Key"]));
+        _ = int.TryParse(_configuration["JwtOptions:ExpirationHours"], out int tokenValidityInHours);
+        
+        var token = new JwtSecurityToken(
+            expires: DateTime.Now.AddHours(tokenValidityInHours),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+        );
+        return token;
+    }
+
+
 }
