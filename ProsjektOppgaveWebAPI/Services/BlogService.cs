@@ -190,6 +190,26 @@ public class BlogService : IBlogService
     
     
     // COMMENTS
+    public async Task<IEnumerable<Comment>> GetCommentsForPost(int postId)
+    {
+        try
+        {
+            var comments = _db.Comment
+                .Where(p => p.PostId == postId)
+                .Include(p => p.Owner)
+                .ToList();
+
+            return comments;
+        }
+        catch (NullReferenceException ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
+        
+            return new List<Comment>();
+        }
+    }
+    
     public async Task SaveComment(Comment comment, IPrincipal principal)
     {
         var user = await _manager.FindByNameAsync(principal.Identity.Name);

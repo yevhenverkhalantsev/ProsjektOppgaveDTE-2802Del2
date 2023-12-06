@@ -14,8 +14,6 @@ public interface IBlogService
     Task Save(Blog blog, IPrincipal principal);
     
     Task Delete(int id , IPrincipal principal);
-    
-    Task<IEnumerable<Post>> GetPostsForBlog(int blogId);
 
     BlogViewModel GetBlogViewModel();
 
@@ -23,6 +21,8 @@ public interface IBlogService
 
     
     // Post
+    Task<IEnumerable<Post>> GetPostsForBlog(int blogId);
+    
     Task SavePost(Post post, IPrincipal principal);
 
     Task DeletePost(int id, IPrincipal principal);
@@ -33,6 +33,8 @@ public interface IBlogService
 
     
     // Comment
+    Task<IEnumerable<Comment>> GetCommentsForPost(int postId);
+    
     Task SaveComment(Comment comment, IPrincipal principal);
 
     Task DeleteComment(int id, IPrincipal principal);
