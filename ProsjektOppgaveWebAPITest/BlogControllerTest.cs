@@ -9,12 +9,12 @@ using ProsjektOppgaveWebAPI.Services;
 
 namespace ProsjektOppgaveWebAPITest;
 
-public class BlogControllerTests
+public class BlogControllerTest
 {
     private readonly Mock<IBlogService> _mockService;
     private readonly BlogController _controller;
 
-    public BlogControllerTests()
+    public BlogControllerTest()
     {
         _mockService = new Mock<IBlogService>();
         _controller = new BlogController(_mockService.Object);

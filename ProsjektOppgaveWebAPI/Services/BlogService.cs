@@ -54,7 +54,11 @@ public class BlogService : IBlogService
  
     public async Task Save(Blog blog, IPrincipal principal)
     {
-        var user = await _manager.FindByNameAsync(principal.Identity.Name);
+        var user = await _manager.FindByNameAsync(principal.Identity?.Name);
+        if (user == null)
+        {
+            throw new ArgumentNullException(nameof(principal), "User not found");
+        }
 
         var existingBlog = _db.Blog.Find(blog.BlogId);
         if (existingBlog != null)
@@ -68,7 +72,7 @@ public class BlogService : IBlogService
 
         blog.Owner = user;
         _db.Blog.Update(blog);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
     
     public async Task Delete(int id, IPrincipal principal)
@@ -79,7 +83,7 @@ public class BlogService : IBlogService
         if (blog.Owner == user)
         {
             _db.Blog.Remove(blog);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         else
         {
@@ -155,7 +159,7 @@ public class BlogService : IBlogService
 
         post.Owner = user;
         _db.Post.Update(post);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
 
     public async Task DeletePost(int id, IPrincipal principal)
@@ -166,7 +170,7 @@ public class BlogService : IBlogService
         if (post.Owner == user)
         {
             _db.Post.Remove(post);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         else
         {

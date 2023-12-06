@@ -8,46 +8,42 @@ namespace ProsjektOppgaveWebAPITest;
 
 public class TagControllerTest
 {
-    public class TagControllerTests
+    private readonly Mock<ITagService> _serviceMock;
+    private readonly TagController _controller;
+
+    public TagControllerTest()
     {
-        private readonly Mock<ITagService> _serviceMock;
-        private readonly TagController _controller;
+        _serviceMock = new Mock<ITagService>();
+        _controller = new TagController(_serviceMock.Object);
+    }
+    
+    
+    
+    // POST
+    [Fact]
+    public async Task Create_ReturnsBadRequest_WhenModelStateIsInvalid()
+    {
+        // Arrange
+        _controller.ModelState.AddModelError("error", "some error");
 
-        public TagControllerTests()
-        {
-            _serviceMock = new Mock<ITagService>();
-            _controller = new TagController(_serviceMock.Object);
-        }
+        // Act
+        var result = await _controller.Create(new Tag());
 
-        
-        
-        
-        // POST
-        [Fact]
-        public async Task Create_ReturnsBadRequest_WhenModelStateIsInvalid()
-        {
-            // Arrange
-            _controller.ModelState.AddModelError("error", "some error");
+        // Assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
 
-            // Act
-            var result = await _controller.Create(new Tag());
+    [Fact]
+    public async Task Create_ReturnsOk_WhenModelStateIsValid()
+    {
+        // Arrange
+        var tag = new Tag();
 
-            // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
+        // Act
+        var result = await _controller.Create(tag);
 
-        [Fact]
-        public async Task Create_ReturnsOk_WhenModelStateIsValid()
-        {
-            // Arrange
-            var tag = new Tag();
-
-            // Act
-            var result = await _controller.Create(tag);
-
-            // Assert
-            Assert.IsType<OkResult>(result);
-            _serviceMock.Verify(x => x.Save(tag), Times.Once);
-        }
+        // Assert
+        Assert.IsType<OkResult>(result);
+        _serviceMock.Verify(x => x.Save(tag), Times.Once);
     }
 }
