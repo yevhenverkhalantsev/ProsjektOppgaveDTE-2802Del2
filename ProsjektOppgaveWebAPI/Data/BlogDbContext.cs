@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProsjektOppgaveWebAPI.Models;
 
+
 namespace ProsjektOppgaveWebAPI.Data;
 
 public class BlogDbContext : IdentityDbContext<IdentityUser>

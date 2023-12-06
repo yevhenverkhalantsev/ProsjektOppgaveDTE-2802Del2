@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddHttpClient("BlogHttpClient", client => client.BaseAddress = new Uri("https://localhost:7115"));
 
 var app = builder.Build();
 

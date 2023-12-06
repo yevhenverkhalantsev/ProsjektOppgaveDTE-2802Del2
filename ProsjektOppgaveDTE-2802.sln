@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveBlazor", "ProsjektOppgaveDTE-2802\ProsjektOppgaveBlazor.csproj", "{32E187FF-01C8-4EAC-A250-93B773EDC6A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProsjektOppgaveBlazor", "ProsjektOppgaveDTE-2802\ProsjektOppgaveBlazor.csproj", "{32E187FF-01C8-4EAC-A250-93B773EDC6A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI", "ProsjektOppgaveWebAPI\ProsjektOppgaveWebAPI.csproj", "{2C1F0314-C233-4208-8A26-CE0DCCFDA6CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProsjektOppgaveWebAPI", "ProsjektOppgaveWebAPI\ProsjektOppgaveWebAPI.csproj", "{2C1F0314-C233-4208-8A26-CE0DCCFDA6CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
