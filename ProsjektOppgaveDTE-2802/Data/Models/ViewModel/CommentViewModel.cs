@@ -1,5 +1,4 @@
-namespace ProsjektOppgaveBlazor.Data.Models.ViewModel;
-
+namespace ProsjektOppgaveBlazor.data.Models.ViewModel;
 public class CommentViewModel
 {
     public int CommentId { get; set; }

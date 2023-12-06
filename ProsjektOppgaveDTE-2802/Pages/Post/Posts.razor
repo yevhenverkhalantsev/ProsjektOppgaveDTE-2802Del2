@@ -1,5 +1,5 @@
 ﻿@page "/posts/{BlogId}"
-@using ProsjektOppgaveBlazor.Data.Models;
+@using ProsjektOppgaveBlazor.data.Models;
 @inject HttpClient BlogHttpClient
 @inject NavigationManager NavigationManager
 
@@ -26,7 +26,7 @@ else
         <tr>
             <td>@post.Title</td>
             <td>@post.Content</td>
-            <td><a href="Post/Index/@post.PostId>">View</a></td>
+            <td><a href="comments/@post.PostId">View</a></td>
             <td><a href="post/@post.PostId">Edit</a></td>
             <td><a href="posts" @onclick="@(e =>DeleteBlog(post.PostId))">Delete</a></td>
         </tr>

@@ -1,4 +1,4 @@
-namespace ProsjektOppgaveBlazor.Data.Models;
+namespace ProsjektOppgaveBlazor.data.Models;
 
 public class Tag
 {

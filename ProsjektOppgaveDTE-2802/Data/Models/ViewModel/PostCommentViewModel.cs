@@ -1,4 +1,4 @@
-namespace ProsjektOppgaveBlazor.Data.Models.ViewModel;
+namespace ProsjektOppgaveBlazor.data.Models.ViewModel;
 
 public class PostCommentViewModel
 {

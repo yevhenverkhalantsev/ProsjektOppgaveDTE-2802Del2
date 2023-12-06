@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace ProsjektOppgaveBlazor.Data.Models;
+namespace ProsjektOppgaveBlazor.data.Models;
 
 public class Comment
 {

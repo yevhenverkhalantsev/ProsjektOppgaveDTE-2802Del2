@@ -1,0 +1,51 @@
+﻿@page "/comments/{PostId}"
+@using ProsjektOppgaveBlazor.data.Models;
+@inject HttpClient BlogHttpClient
+@inject NavigationManager NavigationManager
+
+<h3>Comments</h3>
+
+<a class="btn btn-primary" href="comment">Create</a>
+
+@if (comments == null) 
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table" >
+    <thead>
+    <tr>
+        <th>Text</th>
+        <th>Owner</th>
+    </tr>
+    </thead>
+    <tbody>
+            @foreach (var comment in comments)
+    {
+        <tr>
+            <td>@comment.Text</td>
+            <td>@comment.Owner.Email</td>
+            <td><a href="comment/@comment.PostId">Edit</a></td>
+            <td><a href="comments" @onclick="@(e =>DeleteBlog(comment.PostId))">Delete</a></td>
+        </tr>
+    }
+    </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public string PostId { get; set; }
+    private Comment[] comments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        comments = await BlogHttpClient.GetFromJsonAsync<Comment[]>($"https://localhost:7022/Comment?postId={PostId}");
+    }
+
+    private async Task DeleteBlog(int id)
+    {
+        var response = await BlogHttpClient.DeleteAsync($"https://localhost:7022/Comment/{id}");
+    }
+}
