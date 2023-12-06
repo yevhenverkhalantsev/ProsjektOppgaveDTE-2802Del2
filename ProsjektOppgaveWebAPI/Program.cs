@@ -21,8 +21,7 @@ services.AddCors(options =>
     });
 });
 
-services.AddControllers().AddJsonOptions(x =>
-    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
+services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 

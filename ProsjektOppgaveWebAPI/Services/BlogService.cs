@@ -41,15 +41,13 @@ public class BlogService : IBlogService
             return new List<Blog>();
         }
     }
-
-
+    
     public Blog? GetBlog(int id)
     {
         var b = (from blog in _db.Blog
             where blog.BlogId == id
             select blog)
             .Include(b => b.BlogTags)
-                .ThenInclude(bt => bt.Tag)
             .FirstOrDefault();
         return b;
     }
