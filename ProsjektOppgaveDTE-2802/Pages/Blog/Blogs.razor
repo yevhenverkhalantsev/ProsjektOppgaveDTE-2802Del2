@@ -26,7 +26,7 @@ else
         <tr>
             <td>@blog.Name</td>
             <td>@blog.Owner</td>
-            <td><a href="Post/Index/@blog.BlogId>">View</a></td>
+            <td><a href="blog/posts">View</a></td>
             <td><a href="blog/@blog.BlogId">Edit</a></td>
             <td><a href="blogs" @onclick="@(e =>DeleteBlog(blog.BlogId))">Delete</a></td>
         </tr>
