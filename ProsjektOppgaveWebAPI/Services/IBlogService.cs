@@ -6,7 +6,8 @@ namespace ProsjektOppgaveWebAPI.Services;
 
 public interface IBlogService
 {
-    Task <IEnumerable<Blog>> GetAllBlogs();
+    // Blog
+    Task<IEnumerable<Blog>> GetAllBlogs();
 
     Blog GetBlog(int id);
     
@@ -14,20 +15,34 @@ public interface IBlogService
     
     Task Delete(int id , IPrincipal principal);
     
-    IEnumerable<Post> GetPostsForBlog(int blogId);
+    Task<IEnumerable<Post>> GetPostsForBlog(int blogId);
 
+    BlogViewModel GetBlogViewModel();
+
+    BlogViewModel GetBlogViewModel(int id);
+
+    
+    // Post
+    Task SavePost(Post post, IPrincipal principal);
+
+    Task DeletePost(int id, IPrincipal principal);
+    
     PostViewModel GetPostViewModel();
 
     PostViewModel GetPostViewModel(int id);
 
-    Task SavePost(Post post, IPrincipal principal);
-
-    Task DeletePost(int id, IPrincipal principal);
-
+    
+    // Comment
     Task SaveComment(Comment comment, IPrincipal principal);
 
     Task DeleteComment(int id, IPrincipal principal);
 
     CommentViewModel GetCommentViewModel(int id);
+    
+    
+    // Tags
+    
+    
+    Task SaveTag(Tag tag, IPrincipal principal);
     
 }

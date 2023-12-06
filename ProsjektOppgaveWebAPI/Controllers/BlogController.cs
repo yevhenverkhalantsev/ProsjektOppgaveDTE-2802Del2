@@ -4,7 +4,6 @@ using ProsjektOppgaveWebAPI.Services;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
-
 [Route("/[controller]")]
 [ApiController]
 public class BlogController : ControllerBase

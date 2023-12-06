@@ -108,7 +108,7 @@ public class BlogService : IBlogService
     
     
     // POSTS
-    public IEnumerable<Post> GetPostsForBlog(int blogId)
+    public async Task<IEnumerable<Post>> GetPostsForBlog(int blogId)
     {
         try
         {
@@ -127,27 +127,6 @@ public class BlogService : IBlogService
         
             return new List<Post>();
         }
-    }
-    
-    public PostViewModel GetPostViewModel()
-    {
-        _postViewModel = new PostViewModel();
-        return _postViewModel;
-    }
-
-    public PostViewModel GetPostViewModel(int id)
-    {
-        var post = _db.Post.Find(id);
-        if (post == null) return null;
-    
-        _postViewModel = new PostViewModel
-        {
-            PostId = post.PostId,
-            Title = post.Title,
-            Content = post.Content,
-            BlogId = post.BlogId
-        };
-        return _postViewModel;
     }
     
     public async Task SavePost(Post post, IPrincipal principal)
@@ -185,6 +164,27 @@ public class BlogService : IBlogService
         }
     }
     
+    public PostViewModel GetPostViewModel()
+    {
+        _postViewModel = new PostViewModel();
+        return _postViewModel;
+    }
+
+    public PostViewModel GetPostViewModel(int id)
+    {
+        var post = _db.Post.Find(id);
+        if (post == null) return null;
+    
+        _postViewModel = new PostViewModel
+        {
+            PostId = post.PostId,
+            Title = post.Title,
+            Content = post.Content,
+            BlogId = post.BlogId
+        };
+        return _postViewModel;
+    }
+    
     
     
     // COMMENTS
@@ -215,7 +215,7 @@ public class BlogService : IBlogService
         if (comment.Owner == user)
         {
             _db.Comment.Remove(comment);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         else
         {
@@ -240,5 +240,17 @@ public class BlogService : IBlogService
     
 
     // TAGS
-    // TODO Add Tag methods
+    public async Task SaveTag(Tag tag, IPrincipal principal)
+    {
+        var user = await _manager.FindByNameAsync(principal.Identity.Name);
+
+        var existingTag = _db.Tag.Find(tag.Id);
+        if (existingTag != null)
+        {
+            _db.Entry(existingTag).State = EntityState.Detached;
+        }
+
+        _db.Tag.Add(tag);
+        await _db.SaveChangesAsync();
+    }
 }
