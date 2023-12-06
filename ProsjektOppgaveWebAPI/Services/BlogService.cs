@@ -54,7 +54,11 @@ public class BlogService : IBlogService
  
     public async Task Save(Blog blog, IPrincipal principal)
     {
-        var user = await _manager.FindByNameAsync(principal.Identity.Name);
+        var user = await _manager.FindByNameAsync(principal.Identity?.Name);
+        if (user == null)
+        {
+            throw new ArgumentNullException(nameof(principal), "User not found");
+        }
 
         var existingBlog = _db.Blog.Find(blog.BlogId);
         if (existingBlog != null)
@@ -68,7 +72,7 @@ public class BlogService : IBlogService
 
         blog.Owner = user;
         _db.Blog.Update(blog);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
     
     public async Task Delete(int id, IPrincipal principal)
@@ -79,7 +83,7 @@ public class BlogService : IBlogService
         if (blog.Owner == user)
         {
             _db.Blog.Remove(blog);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         else
         {
@@ -110,6 +114,15 @@ public class BlogService : IBlogService
     
     
     // POSTS
+    public Post? GetPost(int id)
+    {
+        var p = (from post in _db.Post
+                where post.PostId == id
+                select post)
+            .FirstOrDefault();
+        return p;
+    }
+    
     public async Task<IEnumerable<Post>> GetPostsForBlog(int blogId)
     {
         try
@@ -146,7 +159,7 @@ public class BlogService : IBlogService
 
         post.Owner = user;
         _db.Post.Update(post);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
 
     public async Task DeletePost(int id, IPrincipal principal)
@@ -157,7 +170,7 @@ public class BlogService : IBlogService
         if (post.Owner == user)
         {
             _db.Post.Remove(post);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
         else
         {
@@ -184,90 +197,5 @@ public class BlogService : IBlogService
             BlogId = post.BlogId
         };
         return _postViewModel;
-    }
-    
-    
-    
-    // COMMENTS
-    public async Task<IEnumerable<Comment>> GetCommentsForPost(int postId)
-    {
-        try
-        {
-            var comments = _db.Comment
-                .Where(p => p.PostId == postId)
-                .Include(p => p.Owner)
-                .ToList();
-
-            return comments;
-        }
-        catch (NullReferenceException ex)
-        {
-            Console.WriteLine(ex.Message);
-            Console.WriteLine(ex.StackTrace);
-        
-            return new List<Comment>();
-        }
-    }
-    
-    public async Task SaveComment(Comment comment, IPrincipal principal)
-    {
-        var user = await _manager.FindByNameAsync(principal.Identity.Name);
-
-        var existingComment = _db.Comment.Find(comment.CommentId);
-        if (existingComment != null)
-        {
-            if (existingComment.Owner != user)
-            {
-                throw new UnauthorizedAccessException("You are not the owner of this comment.");
-            }
-            _db.Entry(existingComment).State = EntityState.Detached;
-        }
-
-        comment.Owner = user;
-        _db.Comment.Update(comment);
-        _db.SaveChanges();
-    }
-    
-    public async Task DeleteComment(int id, IPrincipal principal)
-    {
-        var user = await _manager.FindByNameAsync(principal.Identity.Name);
-        var comment = _db.Comment.Find(id);
-        
-        if (comment.Owner == user)
-        {
-            _db.Comment.Remove(comment);
-            _db.SaveChanges();
-        }
-        else
-        {
-            throw new UnauthorizedAccessException("You are not the owner of this post.");
-        }
-    }
-    
-    public CommentViewModel GetCommentViewModel(int id)
-    {
-        var comment = _db.Comment.Find(id);
-        if (comment == null) return null;
-    
-        _commentViewModel = new CommentViewModel
-        {
-            CommentId = comment.CommentId,
-            PostId = comment.PostId,
-            Text = comment.Text
-        };
-        return _commentViewModel;
-    }
-    
-    
-
-    // TAGS
-    public async Task SaveTag(Tag tag)
-    {
-        var existingTag = _db.Tag.Find(tag.Id);
-        if (existingTag == null)
-        {
-            _db.Tag.Add(tag);
-            await _db.SaveChangesAsync();
-        }
     }
 }

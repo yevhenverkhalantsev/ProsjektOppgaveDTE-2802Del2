@@ -22,6 +22,8 @@ public interface IBlogService
     
     // Post
     Task<IEnumerable<Post>> GetPostsForBlog(int blogId);
+
+    Post? GetPost(int id);
     
     Task SavePost(Post post, IPrincipal principal);
 
@@ -30,21 +32,4 @@ public interface IBlogService
     PostViewModel GetPostViewModel();
 
     PostViewModel GetPostViewModel(int id);
-
-    
-    // Comment
-    Task<IEnumerable<Comment>> GetCommentsForPost(int postId);
-    
-    Task SaveComment(Comment comment, IPrincipal principal);
-
-    Task DeleteComment(int id, IPrincipal principal);
-
-    CommentViewModel GetCommentViewModel(int id);
-    
-    
-    // Tags
-    
-    
-    Task SaveTag(Tag tag);
-    
 }
