@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ProsjektOppgaveWebAPI.Migrations
+namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 {
-    public partial class NewDB : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -266,6 +266,11 @@ namespace ProsjektOppgaveWebAPI.Migrations
                         principalColumn: "PostId",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "c928871a-b036-4760-903a-dac35584c41d", 0, "dd0ce5b4-0817-4f3c-8585-389e35f85af6", "admin@example.com", true, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAIAAYagAAAAEEVp+8wdYZdTRS8e6OWaJF5ZvofCnB4AYDEcQiJGPZULBn3q6hoTUuFUTOczwm6/uA==", null, false, "", false, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

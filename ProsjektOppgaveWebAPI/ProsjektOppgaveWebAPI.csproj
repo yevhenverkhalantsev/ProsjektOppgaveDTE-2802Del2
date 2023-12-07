@@ -33,6 +33,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProsjektOppgaveWebAPI.Common\ProsjektOppgaveWebAPI.Common.csproj" />
+    <ProjectReference Include="..\ProsjektOppgaveWebAPI.Database\ProsjektOppgaveWebAPI.Database.csproj" />
+    <ProjectReference Include="..\ProsjektOppgaveWebAPI.EntityFramework\ProsjektOppgaveWebAPI.EntityFramework.csproj" />
   </ItemGroup>
 
 

@@ -10,4 +10,18 @@
       <ProjectReference Include="..\ProsjektOppgaveWebAPI.Database\ProsjektOppgaveWebAPI.Database.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.25" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.25" />
+      <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.25" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.25" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.25" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.25">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="6.0.25" />
+      <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.7" />
+    </ItemGroup>
+
 </Project>

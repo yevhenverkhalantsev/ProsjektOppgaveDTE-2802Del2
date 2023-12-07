@@ -2,19 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProsjektOppgaveWebAPI.Data;
 
 #nullable disable
 
-namespace ProsjektOppgaveWebAPI.Migrations
+namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20231205140752_initNew")]
-    partial class initNew
+    partial class BlogDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
@@ -130,6 +128,24 @@ namespace ProsjektOppgaveWebAPI.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "c928871a-b036-4760-903a-dac35584c41d",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "dd0ce5b4-0817-4f3c-8585-389e35f85af6",
+                            Email = "admin@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEVp+8wdYZdTRS8e6OWaJF5ZvofCnB4AYDEcQiJGPZULBn3q6hoTUuFUTOczwm6/uA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -385,21 +401,17 @@ namespace ProsjektOppgaveWebAPI.Migrations
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
                 {
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", "Blog")
+                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", null)
                         .WithMany("BlogTags")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Tag", "Tag")
+                    b.HasOne("ProsjektOppgaveWebAPI.Models.Tag", null)
                         .WithMany("BlogTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Blog");
-
-                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>
@@ -411,7 +423,7 @@ namespace ProsjektOppgaveWebAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("ProsjektOppgaveWebAPI.Models.Post", "Post")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -445,11 +457,6 @@ namespace ProsjektOppgaveWebAPI.Migrations
                     b.Navigation("BlogTags");
 
                     b.Navigation("Posts");
-                });
-
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Post", b =>
-                {
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Tag", b =>

@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ProsjektOppgaveWebAPI.Database\ProsjektOppgaveWebAPI.Database.csproj" />
       <ProjectReference Include="..\ProsjektOppgaveWebAPI\ProsjektOppgaveWebAPI.csproj" />
     </ItemGroup>
 
