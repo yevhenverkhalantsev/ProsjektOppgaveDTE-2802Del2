@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ProsjektOppgaveWebAPI.Common\ProsjektOppgaveWebAPI.Common.csproj" />
+      <ProjectReference Include="..\ProsjektOppgaveWebAPI.Database\ProsjektOppgaveWebAPI.Database.csproj" />
+      <ProjectReference Include="..\ProsjektOppgaveWebAPI.EntityFramework\ProsjektOppgaveWebAPI.EntityFramework.csproj" />
+    </ItemGroup>
+
+</Project>
