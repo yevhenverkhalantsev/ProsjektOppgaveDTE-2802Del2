@@ -50,9 +50,9 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<RegisterResponse> RegisterUser(RegisterViewModel registerViewModel)
     {
-        var authResult = _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/register", registerViewModel);
-        var authContent = authResult.Result.Content.ReadAsStringAsync();
-        var jsonAuthContent = JsonSerializer.Deserialize<RegisterResponse>(authContent.Result, _serializerOptions);
+        var authResult = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/register", registerViewModel);
+        var authContent = await authResult.Content.ReadAsStringAsync();
+        var jsonAuthContent = JsonSerializer.Deserialize<RegisterResponse>(authContent, _serializerOptions);
         return jsonAuthContent;
     }
 }
