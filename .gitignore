@@ -368,3 +368,8 @@ FodyWeavers.xsd
 *.iws
 
 .DS_Store
+
+# DB project files
+*.db-shm
+*.db-wal
+
