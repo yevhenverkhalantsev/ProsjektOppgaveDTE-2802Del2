@@ -14,7 +14,7 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : ControllerBase 
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _configuration;
