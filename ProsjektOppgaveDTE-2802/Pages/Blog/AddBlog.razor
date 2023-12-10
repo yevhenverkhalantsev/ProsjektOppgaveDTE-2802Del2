@@ -6,36 +6,37 @@
 
 <h3>Create _blogModel</h3>
 
-    <div class="row">
-        <div class="col-md-3">
-            <EditForm Model="@_blogModel" OnValidSubmit="Save">
-                <DataAnnotationsValidator/>
-                <div class="form-group">
-                    <div>
-                        <label for="Name">BlogModel Name:</label>
-                        <InputText class="form-control" @bind-Value="_blogModel.Name" />
-                        <ValidationMessage For="@(()=>_blogModel.Name)" />
-
+<AuthorizeView>
+    
+    <Authorized>
+        @(_username = context.User.Identity.Name)
+                <div class="row">
+                    <div class="col-md-3">
+                            <div class="form-group">
+                                <div>
+                                    <label for="Name">BlogModel Name:</label>
+                                    <input class="form-control" type="text" @bind="_blogModel.Name"/>
+        
+                                </div>
+                                <div class="form-check form-switch">
+                                    <label for="Status">Allow post and comments</label>
+                                    <input class="form-check-input" type="checkbox" @bind="_blogModel.IsOpen"/>
+                                </div>
+                                <button class="btn btn-primary" @onclick="() => Save()">Save</button>
+        
+                            </div>
                     </div>
-                    <div class="form-check form-switch">
-                        <label for="Status">Allow post and comments</label>
-                        <InputCheckbox class="form-check-input" @bind-Value="_blogModel.IsOpen" />
-                        <ValidationMessage For="@(()=>_blogModel.IsOpen)" />
-                    </div>
-                        <button class="btn btn-primary" type="submit">Save</button>
-                    
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 </div>
-            </EditForm>
-        </div>
-    </div>
+    </Authorized>
+
+</AuthorizeView>
 
 
 @code {
     
     private BlogModel _blogModel = new BlogModel();
     private HttpClient _httpClient = new HttpClient();
-
+    private string _username = string.Empty;
 
     private async Task<string> Save()
     {
@@ -46,10 +47,11 @@
         _httpClient.DefaultRequestHeaders.Host = "localhost:7115";
         var response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Blog/Create", new
         {
-            OwnerId = _blogModel.OwnerId,
-            Name = _blogModel.Name,
+            OwnerName = _username,
+            Title = _blogModel.Name,
             IsOpen = _blogModel.IsOpen
         });
+        
         return response.IsSuccessStatusCode ? "Success" : "Failed";
     }
 

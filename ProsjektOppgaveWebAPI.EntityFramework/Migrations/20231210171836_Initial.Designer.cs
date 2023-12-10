@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.EntityFramework;
 
 #nullable disable
 
 namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20231207204308_Initial")]
+    [Migration("20231210171836_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,15 +134,15 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c928871a-b036-4760-903a-dac35584c41d",
+                            Id = "a5e1e769-5779-422d-8fde-65e954e83f85",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dd0ce5b4-0817-4f3c-8585-389e35f85af6",
+                            ConcurrencyStamp = "39da850d-119d-4bd0-a0f2-7168b990e51b",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEVp+8wdYZdTRS8e6OWaJF5ZvofCnB4AYDEcQiJGPZULBn3q6hoTUuFUTOczwm6/uA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELZzWgxwMnzIMPsiS7KUoY4VXKwUyhxf38IukK6Dcc0WDJfaSIDY+mO5Mw4jKFyf6A==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -229,11 +229,15 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Blog", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Blog", b =>
                 {
                     b.Property<int>("BlogId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsOpen")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsOpen");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -243,17 +247,14 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("BlogId");
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Blog");
+                    b.ToTable("Blog", (string)null);
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.BlogTagRelations", b =>
                 {
                     b.Property<int>("BlogId")
                         .HasColumnType("INTEGER");
@@ -268,7 +269,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("BlogTagRelations");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Comment", b =>
                 {
                     b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -294,7 +295,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("Comment");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Post", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Post", b =>
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
@@ -324,7 +325,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("Post");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Tag", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -390,7 +391,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Blog", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Blog", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
                         .WithMany()
@@ -401,22 +402,26 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.BlogTagRelations", b =>
                 {
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", null)
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Blog", "Blog")
                         .WithMany("BlogTags")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Tag", null)
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Tag", "Tag")
                         .WithMany("BlogTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Blog");
+
+                    b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Comment", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
                         .WithMany()
@@ -424,7 +429,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Post", "Post")
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Post", "Post")
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -435,9 +440,9 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Post", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Post", b =>
                 {
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", "Blog")
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Blog", "Blog")
                         .WithMany("Posts")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -454,14 +459,14 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Blog", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Blog", b =>
                 {
                     b.Navigation("BlogTags");
 
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Tag", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Tag", b =>
                 {
                     b.Navigation("BlogTags");
                 });

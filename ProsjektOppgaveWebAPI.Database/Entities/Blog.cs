@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace ProsjektOppgaveWebAPI.Database.Entities;
@@ -9,6 +10,9 @@ public class Blog
     public string OwnerId { get; set; }
     public IdentityUser Owner { get; set; }
     public List<Post> Posts { get; set; }
+    
+    [Column( "IsOpen")]
     public bool IsOpen { get; set; }
+    
     public ICollection<BlogTagRelations> BlogTags { get; set; }
 }

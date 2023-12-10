@@ -3,7 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.EntityFramework;
 
 #nullable disable
 
@@ -17,55 +17,6 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
@@ -75,11 +26,9 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("EmailConfirmed")
@@ -92,11 +41,9 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
@@ -115,32 +62,24 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = "ee8d0829-768d-4e70-9488-a9efa7602841",
+                            Id = "8788ff15-dd85-4299-b42e-fa218935a5f7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e001ff54-30d5-4e43-8198-903451815a16",
+                            ConcurrencyStamp = "32d7fd10-28c1-453e-b0e0-7d6fff40e723",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPrSACoY5++Y4SmRpJQxZ9Cz6RM9WFGm5rwo3esqxWJZi0HEPPVYbHJOa5JiFUJmcA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMCUy2I34wSXvnLI/oYprd1tA2gNBF4zPa6G4HrtQ/xOMpj/IEL1TVCpeYQZvAkuQg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -148,93 +87,15 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Blog", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Blog", b =>
                 {
                     b.Property<int>("BlogId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsOpen")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsOpen");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -248,10 +109,10 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Blog");
+                    b.ToTable("Blog", (string)null);
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.BlogTagRelations", b =>
                 {
                     b.Property<int>("BlogId")
                         .HasColumnType("INTEGER");
@@ -266,7 +127,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("BlogTagRelations");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Comment", b =>
                 {
                     b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -292,7 +153,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("Comment");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Post", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Post", b =>
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
@@ -322,7 +183,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("Post");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Tag", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -337,58 +198,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.ToTable("Tag");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Blog", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Blog", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
                         .WithMany()
@@ -399,15 +209,15 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.BlogTagRelations", b =>
                 {
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", "Blog")
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Blog", "Blog")
                         .WithMany("BlogTags")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Tag", "Tag")
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Tag", "Tag")
                         .WithMany("BlogTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -418,7 +228,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Comment", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
                         .WithMany()
@@ -426,7 +236,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Post", "Post")
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Post", "Post")
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -437,9 +247,9 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Post", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Post", b =>
                 {
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", "Blog")
+                    b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Blog", "Blog")
                         .WithMany("Posts")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -456,14 +266,14 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Blog", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Blog", b =>
                 {
                     b.Navigation("BlogTags");
 
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Tag", b =>
+            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Tag", b =>
                 {
                     b.Navigation("BlogTags");
                 });

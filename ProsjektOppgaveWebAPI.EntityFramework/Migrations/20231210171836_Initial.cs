@@ -175,7 +175,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     OwnerId = table.Column<string>(type: "TEXT", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false)
+                    IsOpen = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -270,7 +270,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "c928871a-b036-4760-903a-dac35584c41d", 0, "dd0ce5b4-0817-4f3c-8585-389e35f85af6", "admin@example.com", true, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAIAAYagAAAAEEVp+8wdYZdTRS8e6OWaJF5ZvofCnB4AYDEcQiJGPZULBn3q6hoTUuFUTOczwm6/uA==", null, false, "", false, "admin" });
+                values: new object[] { "a5e1e769-5779-422d-8fde-65e954e83f85", 0, "39da850d-119d-4bd0-a0f2-7168b990e51b", "admin@example.com", true, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAIAAYagAAAAELZzWgxwMnzIMPsiS7KUoY4VXKwUyhxf38IukK6Dcc0WDJfaSIDY+mO5Mw4jKFyf6A==", null, false, "", false, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

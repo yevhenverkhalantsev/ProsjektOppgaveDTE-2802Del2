@@ -38,12 +38,15 @@ public class BlogService : IBlogService
 
     public async Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal)
     {
+        try
+        {
         var user = await _manager.FindByNameAsync(principal.Identity?.Name);
         if (user == null)
         {
             return ResponseService<long>.Error(Errors.USER_NOT_FOUND_ERROR);
         }
 
+        
         var dbRecord = await _blogRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Name == vm.Title && x.OwnerId == user.Id);
         if (dbRecord != null)
@@ -58,16 +61,17 @@ public class BlogService : IBlogService
             OwnerId = user.Id
         };
         
-        try
-        {
+     
             await _blogRepository.Create(dbRecord);
+
+        
+        return ResponseService<long>.Ok(dbRecord.BlogId);
+        
         }
         catch (Exception e)
         {
             return ResponseService<long>.Error(Errors.CANT_CREATE_BLOG_ERROR);
         }
-        
-        return ResponseService<long>.Ok(dbRecord.BlogId);
     }
 
     public async Task<ResponseService> Delete(int id, IPrincipal principal)
