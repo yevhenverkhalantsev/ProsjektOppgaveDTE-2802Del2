@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Services.TagServices;
 

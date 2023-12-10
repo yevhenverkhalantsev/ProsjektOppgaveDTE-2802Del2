@@ -1,35 +1,17 @@
 using System.Security.Principal;
-using ProsjektOppgaveWebAPI.Models;
-using ProsjektOppgaveWebAPI.Models.ViewModel;
+using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.Services.BlogServices.Models;
+using ProsjektOppgaveWebAPI.Services.Response;
 
-namespace ProsjektOppgaveWebAPI.Services;
+namespace ProsjektOppgaveWebAPI.Services.BlogServices;
 
 public interface IBlogService
 {
-    // Blog
     Task<IEnumerable<Blog>> GetAllBlogs();
 
-    Blog? GetBlog(int id);
+    Task<ResponseService<Blog>> GetBlog(int id);
     
-    Task Save(Blog blog, IPrincipal principal);
-    
-    Task Delete(int id , IPrincipal principal);
-
-    BlogViewModel GetBlogViewModel();
-
-    BlogViewModel GetBlogViewModel(int id);
-
-    
-    // Post
-    Task<IEnumerable<Post>> GetPostsForBlog(int blogId);
-
-    Post? GetPost(int id);
-    
-    Task SavePost(Post post, IPrincipal principal);
-
-    Task DeletePost(int id, IPrincipal principal);
-    
-    PostViewModel GetPostViewModel();
-
-    PostViewModel GetPostViewModel(int id);
+    Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal);
+     
+    Task<ResponseService> Delete(int id , IPrincipal principal);
 }

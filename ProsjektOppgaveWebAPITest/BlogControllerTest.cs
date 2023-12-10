@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ProsjektOppgaveWebAPI.Controllers;
-using ProsjektOppgaveWebAPI.Models;
-using ProsjektOppgaveWebAPI.Services;
+using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.Services.BlogServices;
 
 namespace ProsjektOppgaveWebAPITest;
 

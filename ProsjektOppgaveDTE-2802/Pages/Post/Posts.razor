@@ -1,9 +1,9 @@
 ﻿@page "/posts/{BlogId}"
-@using ProsjektOppgaveBlazor.data.Models;
+@using ProsjektOppgaveBlazor.Data.CommonModels
 @inject HttpClient BlogHttpClient
 @inject NavigationManager NavigationManager
 
-<h3>Posts</h3>
+<h3>PostModels</h3>
 
 <a class="btn btn-primary" href="post">Create</a>
 
@@ -38,11 +38,11 @@ else
 @code {
     [Parameter]
     public string BlogId { get; set; }
-    private Post[] posts;
+    private PostModel[] posts;
 
     protected override async Task OnInitializedAsync()
     {
-        posts = await BlogHttpClient.GetFromJsonAsync<Post[]>($"https://localhost:7022/Post?blogId={BlogId}");
+        posts = await BlogHttpClient.GetFromJsonAsync<PostModel[]>($"https://localhost:7022/Post?blogId={BlogId}");
     }
 
     private async Task DeleteBlog(int id)

@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Database.Entities;
 
-
-namespace ProsjektOppgaveWebAPI.Data;
+namespace ProsjektOppgaveWebAPI.EntityFramework;
 
 public class BlogDbContext : IdentityDbContext<IdentityUser>
 {

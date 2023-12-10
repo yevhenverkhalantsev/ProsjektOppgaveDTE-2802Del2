@@ -3,13 +3,10 @@
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-
-
-                <NotAuthorized>
-                    <a href="register">Register</a>
-                    <a href="login">Login</a>
-                </NotAuthorized>
                 
+                <NotAuthorized>
+                </NotAuthorized>
+
             </AuthorizeRouteView>
 
         </Found>

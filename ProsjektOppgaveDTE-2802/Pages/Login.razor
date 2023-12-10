@@ -3,39 +3,41 @@
 @inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 
-@using ProsjektOppgaveBlazor.data.Models.ViewModel
 @using ProsjektOppgaveBlazor.AuthProviders
+@using ProsjektOppgaveBlazor.Data.CommonModels
 
-<PageTitle>Register</PageTitle>
-<h3>Register</h3>
-<input type="text" class="form-control" @bind="loginViewModel.Username">Username</input>
-<input type="password" class="form-control" @bind="loginViewModel.Password">Password</input>
-<p>Username: @userName</p>
-<p>Password: @password</p>
-
-<p>Error: @Error</p>
-
-
-<input type="button" class="btn btn-primary" value="Register" @onclick="HandleRegistration" />
-@* <input type="button" class="btn btn-primary" value="Login" @onclick="() => BlazorService.LoginUser(userName, password)" /> *@
-
-
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Authorisation</h4>
+            </div>
+            <div class="card-body">
+                <input type="text" class="form-control" placeholder="username" @bind="loginViewModel.Username"/><br/>
+                <input type="password" class="form-control" placeholder="password" @bind="loginViewModel.Password"/>
+            </div>
+            <div class="card-footer">
+                <input type="button" class="btn btn-success" value="Sign In" @onclick="HandleRegistration"/>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+</div>
 
 @code {
 
     private LoginViewModel loginViewModel = new LoginViewModel();
     
-    
-    
     private bool ShowError { get; set; }
     private string Error { get; set; }
-    private string userName { get; set; }
+    private string Username { get; set; }
     private string email { get; set; }
-    private string password { get; set; }
+    private string Password { get; set; }
 
     private async Task HandleRegistration()
     {
-        
         ShowError = false;
         
         var result = await AuthenticationService.Login(loginViewModel);
@@ -44,15 +46,5 @@
         {
             NavigationManager.NavigateTo("/");
         }
-        
-
-
-
     }
-    
-    
-
-
-
-
 }

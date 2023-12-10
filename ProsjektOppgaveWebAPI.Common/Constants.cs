@@ -11,4 +11,6 @@ public static class Errors
     public const string POST_ALREADY_EXISTS_ERROR = "Post already exists";
     public const string CANT_CREATE_POST_ERROR = "Can't create post";
     public const string CANT_UPDATE_POST_ERROR = "Can't update post";
+    public const string CANT_DELETE_BLOG_ERROR = "Can't delete blog";
+    public const string CANT_CREATE_BLOG_ERROR = "Can't create blog";
 }

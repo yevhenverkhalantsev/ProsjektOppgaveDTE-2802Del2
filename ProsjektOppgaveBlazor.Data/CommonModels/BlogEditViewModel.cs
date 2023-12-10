@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ProsjektOppgaveBlazor.data.Models.ViewModel;
+namespace ProsjektOppgaveBlazor.Data.CommonModels;
 
 public class BlogViewModel
 {
     public int BlogId { get; set; }
-    [Required(ErrorMessage = "Blog Name Required")]
     public string Name { get; set; }
-    public int Status { get; set; }
+    public bool Status { get; set; }
 }

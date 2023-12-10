@@ -1,7 +1,7 @@
 ﻿@page "/post"
 
-@using ProsjektOppgaveBlazor.data.Models;
 @using Microsoft.AspNetCore.Identity
+@using ProsjektOppgaveBlazor.Data.CommonModels
 @inject HttpClient BlogHttpClient
 
 <h3>Create post</h3>
@@ -18,12 +18,12 @@ else
                 <DataAnnotationsValidator/>
                 <div class="form-group">
                     <div>
-                        <label for="Name">Post title:</label>
+                        <label for="Name">PostModel title:</label>
                         <InputText class="form-control" @bind-Value="post.Title" />
                         <ValidationMessage For="@(()=>post.Title)" />
                     </div>
                     <div>
-                        <label for="Name">Post content:</label>
+                        <label for="Name">PostModel content:</label>
                         <InputText class="form-control" @bind-Value="post.Content" />
                         <ValidationMessage For="@(()=>post.Content)" />
                     </div>
@@ -43,7 +43,7 @@ else
     public int PostId { get; set; }
 
 
-    private Post post = new Post();
+    private PostModel post = new PostModel();
 
 
     private async Task Save()
@@ -69,8 +69,6 @@ else
             LockoutEnd = lockoutEnd,
             LockoutEnabled = false,
             AccessFailedCount = 0
-
-
         };
 
 

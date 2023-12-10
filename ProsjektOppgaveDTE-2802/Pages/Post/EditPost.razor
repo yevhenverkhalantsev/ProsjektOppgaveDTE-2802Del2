@@ -1,8 +1,8 @@
 ﻿
 @page "/post/{PostId:int}"
 
-@using ProsjektOppgaveBlazor.data.Models;
 @using Microsoft.AspNetCore.Identity
+@using ProsjektOppgaveBlazor.Data.CommonModels
 @inject HttpClient BlogHttpClient
 
 <h3>Edit post</h3>
@@ -19,12 +19,12 @@ else
                 <DataAnnotationsValidator/>
                 <div class="form-group">
                         <div>
-                            <label for="Name">Post Title:</label>
+                            <label for="Name">PostModel Title:</label>
                         <InputText class="form-control" @bind-Value="post.Title" />
                         <ValidationMessage For="@(()=>post.Title)" />
                         </div>
                         <div>
-                            <label for="Content">Post Content:</label>
+                            <label for="Content">PostModel Content:</label>
                             <InputText class="form-control" @bind-Value="post.Content" />
                             <ValidationMessage For="@(()=>post.Content)" />
                         </div>
@@ -41,10 +41,10 @@ else
     [Parameter]
     public int PostId { get; set; }
 
-    private Post post;
+    private PostModel post;
     protected override async Task OnInitializedAsync()
     {
-        post = await BlogHttpClient.GetFromJsonAsync<Post>($"https://localhost:7022/Post/{PostId}");
+        post = await BlogHttpClient.GetFromJsonAsync<PostModel>($"https://localhost:7022/Post/{PostId}");
     }
 
     private async Task Save()

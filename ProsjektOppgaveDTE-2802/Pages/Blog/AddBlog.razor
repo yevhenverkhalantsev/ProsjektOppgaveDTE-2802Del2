@@ -1,32 +1,26 @@
 ﻿@page "/blog"
 
-@using ProsjektOppgaveBlazor.data.Models;
-@using Microsoft.AspNetCore.Identity
-@inject HttpClient BlogHttpClient
+@using ProsjektOppgaveBlazor.Data.CommonModels;
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
 
-<h3>Create blog</h3>
+<h3>Create _blogModel</h3>
 
-@if (blog == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
     <div class="row">
         <div class="col-md-3">
-            <EditForm Model="@blog" OnValidSubmit="Save">
+            <EditForm Model="@_blogModel" OnValidSubmit="Save">
                 <DataAnnotationsValidator/>
                 <div class="form-group">
                     <div>
-                        <label for="Name">Blog Name:</label>
-                        <InputText class="form-control" @bind-Value="blog.Name" />
-                        <ValidationMessage For="@(()=>blog.Name)" />
+                        <label for="Name">BlogModel Name:</label>
+                        <InputText class="form-control" @bind-Value="_blogModel.Name" />
+                        <ValidationMessage For="@(()=>_blogModel.Name)" />
 
                     </div>
                     <div class="form-check form-switch">
                         <label for="Status">Allow post and comments</label>
-                        <InputCheckbox class="form-check-input" @bind-Value="Status" />
-                        <ValidationMessage For="@(()=>blog.Status)" />
+                        <InputCheckbox class="form-check-input" @bind-Value="_blogModel.IsOpen" />
+                        <ValidationMessage For="@(()=>_blogModel.IsOpen)" />
                     </div>
                         <button class="btn btn-primary" type="submit">Save</button>
                     
@@ -35,47 +29,28 @@ else
             </EditForm>
         </div>
     </div>
-}
 
 
 @code {
-    [Parameter]
-    public int BlogId { get; set; }
+    
+    private BlogModel _blogModel = new BlogModel();
+    private HttpClient _httpClient = new HttpClient();
 
-    private bool Status
+
+    private async Task<string> Save()
     {
-        get
+        string token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+        token = token.Trim('"');
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        _httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders.Host = "localhost:7115";
+        var response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Blog/Create", new
         {
-            if (blog.Status != 1)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        set
-        {
-            if (!value)
-            {
-                blog.Status = 0;
-            }
-            else
-            {
-                blog.Status = 1;
-            }
-        }
-    }
-
-    private Blog blog = new Blog();
-
-
-    private async Task Save()
-    {
-
-        var response = await BlogHttpClient.PostAsJsonAsync("https://localhost:7022/Blog", blog);
-
+            OwnerId = _blogModel.OwnerId,
+            Name = _blogModel.Name,
+            IsOpen = _blogModel.IsOpen
+        });
+        return response.IsSuccessStatusCode ? "Success" : "Failed";
     }
 
 }

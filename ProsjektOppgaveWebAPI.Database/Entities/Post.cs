@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace ProsjektOppgaveWebAPI.Models;
+namespace ProsjektOppgaveWebAPI.Database.Entities;
 
 public class Post
 {

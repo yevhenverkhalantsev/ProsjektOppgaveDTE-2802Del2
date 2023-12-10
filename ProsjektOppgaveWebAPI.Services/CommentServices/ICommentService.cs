@@ -1,5 +1,5 @@
 using System.Security.Principal;
-using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Models.ViewModel;
 
 namespace ProsjektOppgaveWebAPI.Services.CommentServices;

@@ -1,7 +1,7 @@
-namespace ProsjektOppgaveBlazor.data.Models.ViewModel;
+namespace ProsjektOppgaveBlazor.Data.CommonModels;
 
 public class PostCommentViewModel
 {
-    public Post Post { get; set; }
+    public PostModel PostModel { get; set; }
     public CommentViewModel CommentViewModel { get; set; }
 }

@@ -1,12 +1,11 @@
 ﻿@page "/comment"
+@using ProsjektOppgaveBlazor.Data.CommonModels
 
-@using ProsjektOppgaveBlazor.data.Models;
-@using Microsoft.AspNetCore.Identity
 @inject HttpClient BlogHttpClient
 
 <h3>Create post</h3>
 
-@if (comment == null)
+@if (_commentModel == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -14,13 +13,13 @@ else
 {
     <div class="row">
         <div class="col-md-3">
-            <EditForm Model="@comment" OnValidSubmit="Save">
+            <EditForm Model="@_commentModel" OnValidSubmit="Save">
                 <DataAnnotationsValidator/>
                 <div class="form-group">
                     <div>
-                        <label for="Name">Comment:</label>
-                        <InputText class="form-control" @bind-Value="comment.Text" />
-                        <ValidationMessage For="@(()=>comment.Text)" />
+                        <label for="Name">CommentModel:</label>
+                        <InputText class="form-control" @bind-Value="_commentModel.Text" />
+                        <ValidationMessage For="@(()=>_commentModel.Text)" />
                     </div>
 
                         <button class="btn btn-primary" type="submit">Save</button>
@@ -38,13 +37,13 @@ else
     public int CommentId { get; set; }
 
 
-    private Comment comment = new Comment();
+    private CommentModel _commentModel = new CommentModel();
 
 
     private async Task Save()
     {
 
-        var response = await BlogHttpClient.PostAsJsonAsync("https://localhost:7022/Comment", comment);
+        var response = await BlogHttpClient.PostAsJsonAsync("https://localhost:7022/Comment", _commentModel);
     }
 
 }

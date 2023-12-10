@@ -3,7 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProsjektOppgaveWebAPI.Data;
+using ProsjektOppgaveWebAPI.Database.Entities;
 
 #nullable disable
 
@@ -132,15 +132,15 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c928871a-b036-4760-903a-dac35584c41d",
+                            Id = "ee8d0829-768d-4e70-9488-a9efa7602841",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dd0ce5b4-0817-4f3c-8585-389e35f85af6",
+                            ConcurrencyStamp = "e001ff54-30d5-4e43-8198-903451815a16",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEVp+8wdYZdTRS8e6OWaJF5ZvofCnB4AYDEcQiJGPZULBn3q6hoTUuFUTOczwm6/uA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPrSACoY5++Y4SmRpJQxZ9Cz6RM9WFGm5rwo3esqxWJZi0HEPPVYbHJOa5JiFUJmcA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -233,6 +233,9 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsOpen")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -240,9 +243,6 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("BlogId");
 
@@ -401,17 +401,21 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.BlogTagRelations", b =>
                 {
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", null)
+                    b.HasOne("ProsjektOppgaveWebAPI.Models.Blog", "Blog")
                         .WithMany("BlogTags")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProsjektOppgaveWebAPI.Models.Tag", null)
+                    b.HasOne("ProsjektOppgaveWebAPI.Models.Tag", "Tag")
                         .WithMany("BlogTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Blog");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Models.Comment", b =>

@@ -1,9 +1,9 @@
 ﻿@page "/comments/{PostId}"
-@using ProsjektOppgaveBlazor.data.Models;
+@using ProsjektOppgaveBlazor.Data.CommonModels
 @inject HttpClient BlogHttpClient
 @inject NavigationManager NavigationManager
 
-<h3>Comments</h3>
+<h3>CommentModels</h3>
 
 <a class="btn btn-primary" href="comment">Create</a>
 
@@ -37,11 +37,11 @@ else
 @code {
     [Parameter]
     public string PostId { get; set; }
-    private Comment[] comments;
+    private CommentModel[] comments;
 
     protected override async Task OnInitializedAsync()
     {
-        comments = await BlogHttpClient.GetFromJsonAsync<Comment[]>($"https://localhost:7022/Comment?postId={PostId}");
+        comments = await BlogHttpClient.GetFromJsonAsync<CommentModel[]>($"https://localhost:7022/Comment?postId={PostId}");
     }
 
     private async Task DeleteBlog(int id)

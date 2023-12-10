@@ -1,8 +1,6 @@
 @page "/registration"
-@using Newtonsoft.Json
-@using System.Text
-@using ProsjektOppgaveBlazor.data.Models.ViewModel
 @using ProsjektOppgaveBlazor.AuthProviders
+@using ProsjektOppgaveBlazor.Data.CommonModels
 @inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 
@@ -12,12 +10,12 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h4>Registrationfdbsfbsdfbsdfbsdfbsdbf</h4>
+                <h4>Registration</h4>
             </div>
             <div class="card-body">
                 <input type="text" class="form-control" placeholder="username" @bind="RegisterViewModel.username"/><br/>
-                <input type="email" class="form-control" placeholder="email" @bind="RegisterViewModel.email"/>
-                <input type="password" class="form-control" placeholder="password" @bind="RegisterViewModel.password"/><br/>
+                <input type="email" class="form-control" placeholder="email" @bind="RegisterViewModel.email"/><br/>
+                <input type="password" class="form-control" placeholder="password" @bind="RegisterViewModel.password"/>
             </div>
             <div class="card-footer">
                 <input type="button" class="btn btn-success" value="Sign Up" @onclick="HandleRegistration"/>

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace ProsjektOppgaveBlazor.data.Models;
+namespace ProsjektOppgaveBlazor.Data.CommonModels;
 
-public class Post
+public class PostModel
 {
     public int PostId { get; set; }
     public string Title { get; set; }
@@ -10,5 +10,5 @@ public class Post
     public string OwnerId { get; set; }
     public IdentityUser Owner { get; set; }
     public int BlogId { get; set; }
-    public Blog Blog { get; set; }
+    public BlogModel BlogModel { get; set; }
 }

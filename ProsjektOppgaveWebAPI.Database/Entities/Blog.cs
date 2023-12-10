@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace ProsjektOppgaveWebAPI.Models;
+namespace ProsjektOppgaveWebAPI.Database.Entities;
 
 public class Blog
 {
@@ -9,6 +9,6 @@ public class Blog
     public string OwnerId { get; set; }
     public IdentityUser Owner { get; set; }
     public List<Post> Posts { get; set; }
-    public int Status { get; set; }
+    public bool IsOpen { get; set; }
     public ICollection<BlogTagRelations> BlogTags { get; set; }
 }

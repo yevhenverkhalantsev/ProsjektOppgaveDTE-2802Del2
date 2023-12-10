@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
-using ProsjektOppgaveWebAPI.Data;
-using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.EntityFramework;
 
 namespace ProsjektOppgaveWebAPI.Services.TagServices;
 

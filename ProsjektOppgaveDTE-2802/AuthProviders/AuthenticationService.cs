@@ -2,8 +2,8 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using ProsjektOppgaveBlazor.data.Models.ViewModel;
-using RegisterResponse = ProsjektOppgaveBlazor.data.Models.ViewModel.RegisterResponse;
+using ProsjektOppgaveBlazor.Data.CommonModels;
+using RegisterResponse = ProsjektOppgaveBlazor.Data.CommonModels;
 
 namespace ProsjektOppgaveBlazor.AuthProviders;
 
@@ -48,11 +48,11 @@ public class AuthenticationService : IAuthenticationService
         _httpClient.DefaultRequestHeaders.Authorization = null;
     }
 
-    public async Task<RegisterResponse> RegisterUser(RegisterViewModel registerViewModel)
+    public async Task<RegisterResponse.RegisterResponse> RegisterUser(RegisterViewModel registerViewModel)
     {
         var authResult = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/register", registerViewModel);
         var authContent = await authResult.Content.ReadAsStringAsync();
-        var jsonAuthContent = JsonSerializer.Deserialize<RegisterResponse>(authContent, _serializerOptions);
+        var jsonAuthContent = JsonSerializer.Deserialize<RegisterResponse.RegisterResponse>(authContent, _serializerOptions);
         return jsonAuthContent;
     }
 }

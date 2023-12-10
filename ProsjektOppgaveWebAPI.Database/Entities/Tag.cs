@@ -1,4 +1,4 @@
-namespace ProsjektOppgaveWebAPI.Models;
+namespace ProsjektOppgaveWebAPI.Database.Entities;
 
 public class Tag
 {

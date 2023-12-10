@@ -1,4 +1,4 @@
-using ProsjektOppgaveBlazor.data.Models.ViewModel;
+using ProsjektOppgaveBlazor.Data.CommonModels;
 
 namespace ProsjektOppgaveBlazor.AuthProviders;
 

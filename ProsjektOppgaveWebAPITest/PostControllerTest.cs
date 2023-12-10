@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ProsjektOppgaveWebAPI.Controllers;
+using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Services;
+using ProsjektOppgaveWebAPI.Services.BlogServices;
 
 namespace ProsjektOppgaveWebAPITest;
 
@@ -75,7 +77,7 @@ public class PostControllerTest
     {
         // Arrange
         var post = new Post { BlogId = 1 };
-        var blog = new Blog { Status = 1 };
+        var blog = new Blog { IsOpen = true };
         _serviceMock.Setup(service => service.GetBlog(post.BlogId)).Returns(blog);
 
         // Act
@@ -90,7 +92,7 @@ public class PostControllerTest
     {
         // Arrange
         var post = new Post { BlogId = 1 };
-        var blog = new Blog { Status = 0 };
+        var blog = new Blog { IsOpen = false };
         _serviceMock.Setup(service => service.GetBlog(post.BlogId)).Returns(blog);
 
         // Act

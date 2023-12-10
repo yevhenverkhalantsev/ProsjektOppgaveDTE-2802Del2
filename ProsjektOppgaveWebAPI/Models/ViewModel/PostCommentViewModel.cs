@@ -1,3 +1,5 @@
+using ProsjektOppgaveWebAPI.Database.Entities;
+
 namespace ProsjektOppgaveWebAPI.Models.ViewModel;
 
 public class PostCommentViewModel

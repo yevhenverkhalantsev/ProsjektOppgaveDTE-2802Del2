@@ -1,4 +1,4 @@
-using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Database.Entities;
 
 namespace ProsjektOppgaveWebAPI.Services.TagServices;
 
