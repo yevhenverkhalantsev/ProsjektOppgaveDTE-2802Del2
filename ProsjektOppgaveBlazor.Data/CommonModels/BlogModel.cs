@@ -11,4 +11,10 @@ public class BlogModel
     public List<PostModel> Posts { get; set; }
     public bool IsOpen { get; set; }
     public ICollection<BlogTagRelations> BlogTags { get; set; }
+
+    public BlogModel()
+    {
+        Posts = new List<PostModel>();
+        BlogTags = new List<BlogTagRelations>();
+    }
 }

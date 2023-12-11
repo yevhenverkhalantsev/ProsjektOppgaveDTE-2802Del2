@@ -1,20 +1,18 @@
 ﻿@page "/blog"
 
 @using ProsjektOppgaveBlazor.Data.CommonModels;
-@inject HttpClient Http
 @inject IJSRuntime JSRuntime
 
-<h3>Create _blogModel</h3>
+<h3>Create Blog</h3>
 
 <AuthorizeView>
     
     <Authorized>
-        @(_username = context.User.Identity.Name)
                 <div class="row">
                     <div class="col-md-3">
                             <div class="form-group">
                                 <div>
-                                    <label for="Name">BlogModel Name:</label>
+                                    <label for="Name">New blog for @(_username = context.User.Identity.Name):</label>
                                     <input class="form-control" type="text" @bind="_blogModel.Name"/>
         
                                 </div>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProsjektOppgaveWebAPI.EntityFramework;
 
@@ -10,9 +11,10 @@ using ProsjektOppgaveWebAPI.EntityFramework;
 namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231211200857_removedPostUserRelation")]
+    partial class removedPostUserRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
@@ -71,15 +73,15 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3d0d1cfa-b06d-443f-8ed5-1548c1a34e83",
+                            Id = "3eca3dbc-d8a5-4ba7-a6d4-7613347e61b9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3f6fd1c0-cf19-4e06-a316-ed8be24474a2",
+                            ConcurrencyStamp = "4004e72d-1d79-4bff-9c4d-fb933cdab062",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBgcVjtcHZiaNwohMu7lmPFWtO2h+GLb9psPVM+bKq38DBO3hNmTsW8vhl5y9opdRQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKR9rudPc6BvVmIVLaE1zD6g7ZN6hA+xCpX6VE/9O1QTqqd4lV6w6zQwU0eDaqS7aw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -133,6 +135,10 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("PostId")
                         .HasColumnType("INTEGER");
 
@@ -141,6 +147,8 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("CommentId");
+
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("PostId");
 
@@ -218,11 +226,19 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Comment", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.Post", "Post")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Owner");
 
                     b.Navigation("Post");
                 });
@@ -243,11 +259,6 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("BlogTags");
 
                     b.Navigation("Posts");
-                });
-
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Post", b =>
-                {
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Tag", b =>

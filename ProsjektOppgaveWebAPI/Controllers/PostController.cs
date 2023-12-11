@@ -6,10 +6,11 @@ using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Services;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.PostServices;
+using ProsjektOppgaveWebAPI.Services.PostServices.Models;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
-[Route("/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class PostController : ControllerBase
 {
@@ -23,74 +24,67 @@ public class PostController : ControllerBase
     }
 
     [HttpGet]
+    [Route("/posts")]
     public async Task<IEnumerable<Post>> GetPosts(int blogId)
     {
         return await _postService.GetPostsForBlog(blogId);
     }
     
     
-    [HttpGet("{id:int}")]
+    [HttpGet]
+    [Route("{id:int}")]  
     public async Task<IActionResult> GetPost([FromRoute] int id)
     {
         return Ok(await _postService.GetPost(id));
     }
     
     
-    [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Post post)
+    [Route("[action]")]
+    public async Task<IActionResult> Create([FromBody] CreatePostHttpPostModel vm)
     {
-        if (!ModelState.IsValid)
+        var response = await _postService.SavePost(vm);
+        if (response.IsError)
         {
-            return BadRequest(ModelState);
+            return BadRequest(new
+            {
+                responseMesage = response.ErrorMessage
+            });
         }
 
-        var blog = _blogService.GetBlog(post.BlogId);
-       
-        
-        await _postService.SavePost(post, User);
-        return CreatedAtAction("GetPosts", new { id = post.BlogId }, post);
+        return CreatedAtAction("GetPost", new
+        {
+            id = response.Value
+        });
     }
 
     
-    [Authorize]
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Post post)
-    {
-        if (id != post.PostId)
-            return BadRequest();
-
-        var existingPost = await _postService.GetPost(id);
-        if (existingPost is null)
-            return NotFound();
-        
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (existingPost.Value.OwnerId != userId)
-        {
-            return Unauthorized();
-        }
-        
-        _postService.SavePost(post, User);
-
-        return NoContent();
-    }
+    // [Authorize]
+    // [HttpPut("{id:int}")]
+    // public Task<IActionResult> Update([FromRoute] int id, [FromBody] Post post)
+    // {
+    //     // if (id != post.PostId)
+    //     //     return BadRequest();
+    //     //
+    //     // var existingPost = await _postService.GetPost(id);
+    //     // if (existingPost is null)
+    //     //     return NotFound();
+    //     //
+    //     // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    //     // if (existingPost.Value.OwnerId != userId)
+    //     // {
+    //     //     return Unauthorized();
+    //     // }
+    //     //
+    //     // _postService.SavePost(post, User);
+    //     //
+    //      return
+    // }
 
     
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var post = await _postService.GetPost(id);
-        if (post is null)
-            return NotFound();
-        
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (post.Value.OwnerId != userId)
-        {
-            return Unauthorized();
-        }
-
-        _postService.DeletePost(id, User);
-
-        return NoContent();
+        return Ok();
     }
 }

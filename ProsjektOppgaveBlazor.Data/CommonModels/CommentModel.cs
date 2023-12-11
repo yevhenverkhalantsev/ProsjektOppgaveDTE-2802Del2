@@ -10,4 +10,7 @@ public class CommentModel
     public IdentityUser Owner { get; set; }
     public int PostId { get; set; }
     public PostModel PostModel { get; set; }
+    
+    public int BlogId { get; set; }
+    public BlogViewModel BlogViewModel { get; set; }
 }

@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Identity;
+namespace ProsjektOppgaveWebAPI.Services.PostServices.Models;
 
-namespace ProsjektOppgaveBlazor.Data.CommonModels;
-
-public class PostModel
+public class CreatePostHttpPostModel
 {
     public string Title { get; set; }
     public string Content { get; set; }

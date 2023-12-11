@@ -11,6 +11,8 @@ public interface IBlogService
 
     Task<ResponseService<Blog>> GetBlog(int id);
     
+    Task<ICollection<Blog>> GetAllBlogsByUserId(string userId);
+    
     Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal);
      
     Task<ResponseService> Delete(int id , IPrincipal principal);

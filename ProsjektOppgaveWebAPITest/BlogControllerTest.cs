@@ -6,6 +6,7 @@ using Moq;
 using ProsjektOppgaveWebAPI.Controllers;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
+using ProsjektOppgaveWebAPI.Services.Response;
 
 namespace ProsjektOppgaveWebAPITest;
 
@@ -79,7 +80,7 @@ public class BlogControllerTest
     {
         // Arrange
         _mockService.Setup(service => service.GetBlog(It.IsAny<int>()))
-            .Returns((Blog)null);
+            .Returns(null as Func<Task<ResponseService<Blog>>>);
 
         // Act
         var result = _controller.Get(1);
@@ -93,7 +94,7 @@ public class BlogControllerTest
     {
         // Arrange
         _mockService.Setup(service => service.GetBlog(It.IsAny<int>()))
-            .Returns(new Blog());
+            .Returns(Task.FromResult(ResponseService<Blog>.Ok(new Blog())));
 
         // Act
         var result = _controller.Get(1);

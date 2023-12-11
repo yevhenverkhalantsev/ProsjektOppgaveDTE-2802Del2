@@ -29,7 +29,7 @@ public class GenericRepository<T>: IGenericRepository<T> where T : class
         await _context.SaveChangesAsync();
     }
 
-    public async Task<T> GetById(long id)
+    public async Task<T> GetById(int id)
     {
         return await _context.Set<T>().FindAsync(id);
     }

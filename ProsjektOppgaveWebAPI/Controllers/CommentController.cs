@@ -51,22 +51,24 @@ public class CommentController : ControllerBase
     [HttpPut("{id:int}")]
     public IActionResult Update([FromRoute] int id, [FromBody] Comment comment)
     {
-        if (id != comment.CommentId)
-            return BadRequest();
+        // if (id != comment.CommentId)
+        //     return BadRequest();
+        //
+        // var existingComment = _service.GetComment(id);
+        // if (existingComment is null)
+        //     return NotFound();
+        //
+        // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        // if (existingComment.OwnerId != userId)
+        // {
+        //     return Unauthorized();
+        // }
+        //
+        // _service.Save(comment, User);
+        //
+        // return NoContent();
 
-        var existingComment = _service.GetComment(id);
-        if (existingComment is null)
-            return NotFound();
-        
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (existingComment.OwnerId != userId)
-        {
-            return Unauthorized();
-        }
-
-        _service.Save(comment, User);
-
-        return NoContent();
+        return Ok();
     }
     
     
@@ -74,18 +76,6 @@ public class CommentController : ControllerBase
     [HttpDelete("{id:int}")]
     public IActionResult Delete([FromRoute] int id)
     {
-        var comment = _service.GetComment(id);
-        if (comment is null)
-            return NotFound();
-        
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (comment.OwnerId != userId)
-        {
-            return Unauthorized();
-        }
-
-        _service.Delete(id, User);
-
-        return NoContent();
+        return Ok();
     }
 }

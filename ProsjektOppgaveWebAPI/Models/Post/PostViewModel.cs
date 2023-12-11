@@ -1,4 +1,7 @@
-namespace ProsjektOppgaveBlazor.Data.CommonModels;
+using ProsjektOppgaveWebAPI.Models.Comment;
+using ProsjektOppgaveWebAPI.Services.PostServices.Models;
+
+namespace ProsjektOppgaveWebAPI.Models.Post;
 
 public class PostViewModel
 {

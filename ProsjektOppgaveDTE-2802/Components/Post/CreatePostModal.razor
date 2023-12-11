@@ -1,0 +1,71 @@
+@using ProsjektOppgaveBlazor.Data.CommonModels
+@using System.Net.Http.Headers
+@using ProsjektOppgaveBlazor.Pages.Blog
+@inject IJSRuntime JsRuntime
+
+<input type="button" class="btn btn-outline-dark float-end" value="add post" style="" id="create-new-post-button" data-bs-target="#create-new-post-modal" data-bs-toggle="modal"/>
+<div class="modal fade" id="create-new-post-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">Create new post</div>
+            <div class="modal-body bg-secondary rounded h-100 p-4">
+
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" id="post-title" @bind="_postModel.Title">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Content</label>
+                    <input type="text" class="form-control" id="post-content" @bind="_postModel.Content">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="btnCreate" type="button" style="margin-bottom: 10px" class="btn btn-success" 
+                        @onclick="CreateNewPostHandler">Create</button>
+
+                <div id="create-success-label" class="alert alert-success d-none">
+                    Created successfully!
+                </div>
+                <div id="create-error-label" class="alert alert-danger d-none">
+                    Error on created!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    
+    [CascadingParameter]
+    public View ParentComponent { get; set; }
+    
+    [Parameter]
+    public int BlogId { get; set; }
+
+    private PostModel _postModel = new PostModel();
+    HttpClient _httpClient = new HttpClient();
+
+    private async Task CreateNewPostHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            _postModel.BlogId = BlogId;
+            
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken"));
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/post/create", _postModel);
+            if (response.IsSuccessStatusCode)
+            {
+                ParentComponent.CreateNewPostHandler(new PostViewModel()
+                {
+                    BlogId = BlogId,
+                    Comments = new List<CommentViewModel>(),
+                    Content = _postModel.Content,
+                    Title = _postModel.Title
+                });
+            }
+        }
+    }
+
+}

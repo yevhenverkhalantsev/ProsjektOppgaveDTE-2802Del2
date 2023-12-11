@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using ProsjektOppgaveBlazor.Data.CommonModels
+@using Newtonsoft.Json
 
 <div class="input-group rounded">
     <form class="form-inline my-2 my-lg-0">
@@ -9,7 +11,7 @@
 <div class="container-fluid pt-4 px-4">
     <div class="bg-secondary text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <h6 class="mb-0">All _blogModels</h6>
+            <h6 class="mb-0">Blogs</h6>
         </div>
         <div class="table-responsive">
             <table class="table text-start align-middle table-bordered table-hover mb-0">
@@ -22,20 +24,41 @@
                 </tr>
                 </thead>
                 <tbody>
-                @* @foreach (var _blogModel in Model.BlogModels) *@
-                @* { *@
-                @*          *@
-                @*     <tr> *@
-                @*         <td>@_blogModel.CreatedAt.ToString("dd MMM yyyy")</td> *@
-                @*         <td>@_blogModel.User.Username</td> *@
-                @*         <td>@_blogModel.Title</td> *@
-                @*         <td> *@
-                @*             <a class="btn btn-sm btn-primary" href="@Url.Action("BlogModelDetails","BlogModel", new {@id = _blogModel.Id})">Detail</a> *@
-                @*         </td> *@
-                @*     </tr> *@
-                @* } *@
+                
+                @for (int i = 0; i < _blogs.Length; i++)
+                {
+                    <tr>
+                        <td></td>
+                        <td>@_blogs[i].Owner.UserName</td>
+                        <td>@_blogs[i].Name</td>
+                        <td><a href="/blogs/view/@_blogs[i].BlogId">More info</a></td>
+                    </tr>
+                }
+
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+@code {
+
+    private HttpClient _httpclient = new HttpClient();
+    private BlogModel[] _blogs = new BlogModel[0];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+           HttpResponseMessage responseMessage = await _httpclient.GetAsync("https://localhost:7022/blogs");
+              if (responseMessage.IsSuccessStatusCode)
+              {
+                  string _jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+                  _blogs = JsonConvert.DeserializeObject<BlogModel[]>(_jsonResponse);
+                  StateHasChanged();
+              }
+        }
+    }
+
+
+}

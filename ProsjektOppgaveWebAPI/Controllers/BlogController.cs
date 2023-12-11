@@ -1,8 +1,14 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Models.Blog;
+using ProsjektOppgaveWebAPI.Models.Comment;
+using ProsjektOppgaveWebAPI.Models.Post;
+using ProsjektOppgaveWebAPI.Models.ViewModel;
 using ProsjektOppgaveWebAPI.Services;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.BlogServices.Models;
@@ -23,28 +29,54 @@ public class BlogController : ControllerBase
 
     [HttpGet]
     [Route("/blogs")]
-    public async Task<IEnumerable<Blog>> GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return await _service.GetAllBlogs();
+        return Ok(JsonConvert.SerializeObject(await _service.GetAllBlogs(), new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        }));
     }
 
 
     [HttpGet]
     [Route("{id:int}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var blog = _service.GetBlog(id);
-        if (blog == null)
+        var response = await _service.GetBlog(id);
+        if (response.IsError)
         {
             return NotFound();
         }
-        return Ok(blog);
+
+        BlogViewModel vm = new BlogViewModel()
+        {
+            Title = response.Value.Name,
+            Posts = response.Value.Posts.Select(x => new PostViewModel()
+            {
+                PostId = x.PostId,
+                Title = x.Title,
+                Content = x.Content,
+                BlogId = x.BlogId,
+                Comments = x.Comments.Select(c => new CommentViewModel()
+                {
+                    CommentId = c.CommentId,
+                    Text = c.Text,
+                    PostId = c.PostId
+                }).ToList()
+
+            }).ToList()
+        };
+        
+        return Ok(vm);
     }
 
+    
+    [HttpGet]
+    [Route("[action]/{userId}")]
+    public async Task<IActionResult> GetAllByUserId([FromRoute] string userId)
+    {
+        return Ok(await _service.GetAllBlogsByUserId(userId));
+    }
 
     [Authorize]
     [HttpPost]

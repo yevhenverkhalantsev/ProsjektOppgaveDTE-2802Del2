@@ -7,12 +7,13 @@ public class Blog
 {
     public int BlogId { get; set; }
     public string Name { get; set; }
-    public string OwnerId { get; set; }
-    public IdentityUser Owner { get; set; }
-    public List<Post> Posts { get; set; }
     
     [Column( "IsOpen")]
     public bool IsOpen { get; set; }
     
+    public string OwnerId { get; set; }
+    public IdentityUser Owner { get; set; }
+    
+    public List<Post> Posts { get; set; }
     public ICollection<BlogTagRelations> BlogTags { get; set; }
 }

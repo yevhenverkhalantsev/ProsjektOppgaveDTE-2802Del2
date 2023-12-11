@@ -22,18 +22,37 @@ public class BlogService : IBlogService
     
     public async Task<IEnumerable<Blog>> GetAllBlogs()
     {
-        return await _blogRepository.GetAll().ToListAsync();
+        return await _blogRepository.GetAll()
+            .Include(x=>x.Posts)
+            .Include(x=>x.BlogTags)
+            .Include(x=>x.Owner)
+            .ToListAsync();
+        
     }
 
     public async Task<ResponseService<Blog>> GetBlog(int id)
     {
-        var blog = await _blogRepository.GetById(id);
+        var blog = await _blogRepository.GetAll()
+            .Where(x => x.BlogId == id)
+            .Include(x => x.Posts)
+            .ThenInclude(x => x.Comments)
+            .FirstOrDefaultAsync();
+        
         if (blog == null)
         {
             return ResponseService<Blog>.Error(Errors.BLOG_NOT_FOUND_ERROR);
         }
-
+        
         return ResponseService<Blog>.Ok(blog);
+    }
+
+    public async Task<ICollection<Blog>> GetAllBlogsByUserId(string userId)
+    {
+        var blogs = await _blogRepository.GetAll()
+            .Where(b=>b.Owner.Id == userId)
+            .ToListAsync();
+        
+        return blogs;
     }
 
     public async Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal)
