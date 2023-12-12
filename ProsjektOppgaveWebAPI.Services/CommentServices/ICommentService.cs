@@ -1,5 +1,7 @@
 using System.Security.Principal;
 using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.Services.CommentServices.Models;
+using ProsjektOppgaveWebAPI.Services.Response;
 
 namespace ProsjektOppgaveWebAPI.Services.CommentServices;
 
@@ -9,7 +11,7 @@ public interface ICommentService
 
     Comment? GetComment(int id);
     
-    Task Save(Comment comment, IPrincipal principal);
+    Task<ResponseService<int>> Save(CreateCommentHttpPostModel vm);
 
     Task Delete(int id, IPrincipal principal);
 }

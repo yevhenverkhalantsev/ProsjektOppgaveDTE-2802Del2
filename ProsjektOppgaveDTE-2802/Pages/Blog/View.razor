@@ -13,11 +13,13 @@
             
         </div>
     </div>
-@if (_blogModel.Posts != null && _blogModel.Posts.Count > 0)
+@if (_blogModel.Posts is { Count: > 0 })
 {
     @foreach (var post in _blogModel.Posts)
     {
-        <ViewPost Post="post"/>
+        <CascadingValue Value="this">
+            <ViewPost Post="post"/>
+        </CascadingValue>
     }
 }
         
@@ -81,7 +83,7 @@
     public async Task CreateNewPostHandler(PostViewModel post)
     {
         _blogModel.Posts.Add(post);
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

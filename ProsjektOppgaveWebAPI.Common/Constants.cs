@@ -13,4 +13,6 @@ public static class Errors
     public const string CANT_UPDATE_POST_ERROR = "Can't update post";
     public const string CANT_DELETE_BLOG_ERROR = "Can't delete blog";
     public const string CANT_CREATE_BLOG_ERROR = "Can't create blog";
+    public const string COMMENT_ALREADY_CREATED_ERROR = "Comment already created";
+    public const string CANT_CREATE_COMENT_ERROR = "Can't create comment";
 }

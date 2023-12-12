@@ -1,50 +1,50 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Database.Entities;
-using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Services.CommentServices;
+using ProsjektOppgaveWebAPI.Services.CommentServices.Models;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
-[Route("/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CommentController : ControllerBase
 {
-    private readonly ICommentService _service;
+    private readonly ICommentService _commentService;
 
-    public CommentController(ICommentService service)
+    public CommentController(ICommentService commentService)
     {
-        _service = service;
+        _commentService = commentService;
     }
-    
     
     [HttpGet]
     public async Task<IEnumerable<Comment>> GetComments(int postId)
     {
-        return await _service.GetCommentsForPost(postId);
+        return await _commentService.GetCommentsForPost(postId);
     }
     
     
     [HttpGet("{id:int}")]
-    public Comment? GetComment([FromRoute] int id)
+    public Comment GetComment([FromRoute] int id)
     {
-        return _service.GetComment(id);
+        return _commentService.GetComment(id);
     }
     
-    
-    [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Comment comment)
+    [Route("[action]")]
+    public async Task<IActionResult> Create([FromBody] CreateCommentHttpPostModel vm)
     {
-        if (!ModelState.IsValid)
+        var response = await _commentService.Save(vm);
+        if (response.IsError)
         {
-            return BadRequest(ModelState);
+            return BadRequest(new
+            {
+                responseMesage = response.ErrorMessage
+            });
         }
-        
-        await _service.Save(comment, User);
-        return CreatedAtAction("GetComment", new { id = comment.PostId }, comment);
-    }
+
+        return Ok(response.Value);
+    }  
     
     
     [Authorize]

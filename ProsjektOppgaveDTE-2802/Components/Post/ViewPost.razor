@@ -1,4 +1,7 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
+@using System.Net.Http.Headers
+@inject IJSRuntime JsRuntime
+
 <br/>
             <div id="post-container-">
                 <div class="card">
@@ -19,26 +22,31 @@
                         <br/>
                         <hr/>
                         <br/>
-                        <div id="comments-section-">
-                       
-                            <h6 style="color: black">Comments:</h6>
+                        <div id="comments-section-@Post.PostId">
                             
-                            <div id="comments-container-">
-                                    <div id="comment-" class="d-flex justify-content-between align-items-center border-bottom mb-2 pb-2">
-                                        <span></span>
+                            @if (Post.Comments.Count > 0)
+                            {
+                                <h6 style="color: black">Comments:</h6>
+                            }
+                            <div id="comments-container-@Post.PostId">
+                                @foreach (CommentViewModel comment in Post.Comments)
+                                {
+                                    <div id="comment-@comment.CommentId" class="d-flex justify-content-between align-items-center border-bottom mb-2 pb-2">
+                                        <span>@comment.Text</span>
                                         <div>
-                                                <button class="btn btn-sm btn-outline-secondary" onclick="" data-bs-target="#edit-comment-modal" data-bs-toggle="modal">Edit</button>
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="" data-bs-target="#edit-comment-modal" data-bs-toggle="modal">Edit</button>
 
-                                         
-                                                <button class="btn btn-sm btn-outline-danger" onclick="">Delete</button>
-                                            
+
+                                            <button class="btn btn-sm btn-outline-danger" onclick="">Delete</button>
+
                                         </div>
                                     </div>
+                                }
 
                             </div>
                                 <div class="input-group mb-3">
-                                    <input type="text" class="form-control" placeholder="Write a comment..." id="comment-input-">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="">Comment</button>
+                                    <input type="text" class="form-control" placeholder="Write a comment..." id="comment-input" @bind="_commentModel.Text">
+                                    <button class="btn btn-outline-secondary" type="button" @onclick="CreateNewCommentHandler">Comment</button>
                                 </div>
                         </div>
                         
@@ -52,8 +60,32 @@
             </div>
 @code {
     
-    [Parameter]
-    public PostViewModel Post { get; set; }
-    
-    
+    [Parameter] public PostViewModel Post { get; set; }
+
+    private CommentModel _commentModel = new CommentModel();
+    HttpClient _httpClient = new HttpClient();
+
+    private async Task CreateNewCommentHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            _commentModel.PostId = Post.PostId;
+            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Comment/Create", _commentModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var createdCommentId = await response.Content.ReadFromJsonAsync<int>();
+                Post.Comments.Add(new CommentViewModel()
+                {
+                    CommentId = createdCommentId,
+                    PostId = Post.PostId,
+                    Text = _commentModel.Text
+                });
+                
+                StateHasChanged();
+            }
+        }
+    }
 }

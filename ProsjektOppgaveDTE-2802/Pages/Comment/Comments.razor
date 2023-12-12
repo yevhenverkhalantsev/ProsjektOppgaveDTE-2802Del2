@@ -25,9 +25,8 @@ else
     {
         <tr>
             <td>@comment.Text</td>
-            <td>@comment.Owner.Email</td>
-            <td><a href="comment/@comment.CommentId">Edit</a></td>
-            <td><a href="comments" @onclick="@(e =>DeleteBlog(comment.PostId))">Delete</a></td>
+            <td><a href="comment/@comment.PostId">Edit</a></td>
+            <td><a href="comment" @onclick="@(e =>DeleteBlog(comment.PostId))">Delete</a></td>
         </tr>
     }
     </tbody>
