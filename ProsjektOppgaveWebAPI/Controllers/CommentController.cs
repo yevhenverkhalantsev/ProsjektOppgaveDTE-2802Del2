@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Services.CommentServices;
 using ProsjektOppgaveWebAPI.Services.CommentServices.Models;
 
@@ -11,10 +13,12 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly ICommentService _commentService;
+    private readonly IHubContext<CommentHub> _hubContext;
 
-    public CommentController(ICommentService commentService)
+    public CommentController(ICommentService commentService, IHubContext<CommentHub> hubContext)
     {
         _commentService = commentService;
+        _hubContext = hubContext;
     }
     
     [HttpGet]
@@ -43,8 +47,30 @@ public class CommentController : ControllerBase
             });
         }
 
+        await _hubContext.Clients.All.SendAsync("CreateCommentHandler", new
+        {
+            CommentId = response.Value,
+            Text = vm.Text,
+            PostId = vm.PostId
+        });
+        
         return Ok(response.Value);
     }  
+    
+    [HttpPost]
+    [Route("/TestNotify")]
+    public async Task<IActionResult> TestNotify([FromBody] CreateCommentHttpPostModel vm)
+    {
+        CreateCommentHttpPostModel createCommentHttpPostModel = new CreateCommentHttpPostModel()
+        {
+            PostId = -1,
+            Text = "Test"
+        };
+        
+        await _hubContext.Clients.All.SendAsync("CreateCommentHandler", createCommentHttpPostModel);
+        
+        return Ok(createCommentHttpPostModel);
+    }
     
     
     [Authorize]

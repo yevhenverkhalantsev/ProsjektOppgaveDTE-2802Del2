@@ -1,6 +1,8 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using System.Net.Http.Headers
+@using Microsoft.AspNetCore.SignalR.Client
 @inject IJSRuntime JsRuntime
+
 
 <br/>
             <div id="post-container-">
@@ -65,6 +67,24 @@
     private CommentModel _commentModel = new CommentModel();
     HttpClient _httpClient = new HttpClient();
 
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/Comment/Create")
+            .Build();
+                
+        await hubConnection.StartAsync();
+        hubConnection.On<CommentViewModel>("CreateCommentHandler", async (comment) =>
+        {
+            Post.Comments.Add(comment);
+            _commentModel.Text = String.Empty;
+            await InvokeAsync(StateHasChanged);
+
+        });
+                
+        StateHasChanged();
+    }
+
     private async Task CreateNewCommentHandler(MouseEventArgs e)
     {
         if (e.Button == 0)
@@ -77,14 +97,8 @@
             if (response.IsSuccessStatusCode)
             {
                 var createdCommentId = await response.Content.ReadFromJsonAsync<int>();
-                Post.Comments.Add(new CommentViewModel()
-                {
-                    CommentId = createdCommentId,
-                    PostId = Post.PostId,
-                    Text = _commentModel.Text
-                });
-                
-                StateHasChanged();
+
+ 
             }
         }
     }

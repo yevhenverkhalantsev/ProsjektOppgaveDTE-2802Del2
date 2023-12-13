@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProsjektOppgaveWebAPI.EntityFramework;
 using ProsjektOppgaveWebAPI.EntityFramework.Repository;
+using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.CommentServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
@@ -26,6 +27,7 @@ services.AddCors(options =>
 });
 
 services.AddControllers();
+services.AddSignalR();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -84,5 +86,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<CommentHub>("/api/Comment/Create");
 
 app.Run();
