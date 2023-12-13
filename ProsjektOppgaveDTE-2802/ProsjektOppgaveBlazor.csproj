@@ -21,7 +21,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\ProsjektOppgaveBlazor.Data\ProsjektOppgaveBlazor.Data.csproj" />
-    <ProjectReference Include="..\ProsjektOppgaveBlazor.Services\ProsjektOppgaveBlazor.Services.csproj" />
   </ItemGroup>
 
 </Project>

@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI.Entit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveWebAPI.Services", "ProsjektOppgaveWebAPI.Services\ProsjektOppgaveWebAPI.Services.csproj", "{F8EBE533-BA6E-4D6A-B167-C9F172206852}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveBlazor.Services", "ProsjektOppgaveBlazor.Services\ProsjektOppgaveBlazor.Services.csproj", "{218AA873-8E79-4F8F-989A-DA17EFA69C7F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProsjektOppgaveBlazor.Data", "ProsjektOppgaveBlazor.Data\ProsjektOppgaveBlazor.Data.csproj", "{4628A84F-9CB4-4652-8F69-02220AEC125A}"
 EndProject
 Global
@@ -55,10 +53,6 @@ Global
 		{F8EBE533-BA6E-4D6A-B167-C9F172206852}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8EBE533-BA6E-4D6A-B167-C9F172206852}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8EBE533-BA6E-4D6A-B167-C9F172206852}.Release|Any CPU.Build.0 = Release|Any CPU
-		{218AA873-8E79-4F8F-989A-DA17EFA69C7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{218AA873-8E79-4F8F-989A-DA17EFA69C7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{218AA873-8E79-4F8F-989A-DA17EFA69C7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{218AA873-8E79-4F8F-989A-DA17EFA69C7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4628A84F-9CB4-4652-8F69-02220AEC125A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4628A84F-9CB4-4652-8F69-02220AEC125A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4628A84F-9CB4-4652-8F69-02220AEC125A}.Release|Any CPU.ActiveCfg = Release|Any CPU

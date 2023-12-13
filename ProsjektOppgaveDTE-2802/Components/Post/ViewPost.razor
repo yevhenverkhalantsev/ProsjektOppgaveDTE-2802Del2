@@ -31,31 +31,29 @@
                                 <h6 style="color: black">Comments:</h6>
                             }
                             <div id="comments-container-@Post.PostId">
+                                
                                 @foreach (CommentViewModel comment in Post.Comments)
                                 {
                                     <div id="comment-@comment.CommentId" class="d-flex justify-content-between align-items-center border-bottom mb-2 pb-2">
                                         <span>@comment.Text</span>
                                         <div>
-                                            <button class="btn btn-sm btn-outline-secondary" onclick="" data-bs-target="#edit-comment-modal" data-bs-toggle="modal">Edit</button>
-
-
+                                            <button class="btn btn-sm btn-outline-warning" onclick="" data-bs-target="#edit-comment-modal" data-bs-toggle="modal">Edit</button>
                                             <button class="btn btn-sm btn-outline-danger" onclick="">Delete</button>
-
                                         </div>
                                     </div>
                                 }
 
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="Write a comment..." id="comment-input" @bind="_commentModel.Text">
+                                        <button class="btn btn-outline-secondary" type="button" @onclick="CreateNewCommentHandler">Comment</button>
+                                    </div>
                             </div>
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" placeholder="Write a comment..." id="comment-input" @bind="_commentModel.Text">
-                                    <button class="btn btn-outline-secondary" type="button" @onclick="CreateNewCommentHandler">Comment</button>
-                                </div>
                         </div>
                         
                     </div>
                         <div class="card-footer">
-                            <input type="button" class="btn btn-danger" value="Delete" id="remove-post-"/>
                             <input type="button" class="btn btn-warning" value="Edit" id="edit-post-" data-bs-target="#edit-post-modal" data-bs-toggle="modal" onclick=""/>
+                            <input type="button" class="btn btn-danger" value="Delete" id="remove-post-"/>
                         </div>
                 </div>
                 <br />
@@ -76,11 +74,17 @@
         await hubConnection.StartAsync();
         hubConnection.On<CommentViewModel>("CreateCommentHandler", async (comment) =>
         {
-            Post.Comments.Add(comment);
-            _commentModel.Text = String.Empty;
-            await InvokeAsync(StateHasChanged);
-
+            if (Post.PostId == comment.PostId)
+            {
+                if (Post.Comments.All(c => c.CommentId != comment.CommentId))
+                {
+                    Post.Comments.Add(comment);
+                }
+                _commentModel.Text = String.Empty;
+                await InvokeAsync(StateHasChanged);
+            }
         });
+
                 
         StateHasChanged();
     }
@@ -97,8 +101,6 @@
             if (response.IsSuccessStatusCode)
             {
                 var createdCommentId = await response.Content.ReadFromJsonAsync<int>();
-
- 
             }
         }
     }

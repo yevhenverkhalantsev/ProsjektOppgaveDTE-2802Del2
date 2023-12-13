@@ -99,4 +99,10 @@
             }
         }
     }
+    
+    public void AppendPost(PostViewModel post)
+    {
+        _blogModel.Posts.Add(post);
+        StateHasChanged();
+    }
 }

@@ -87,5 +87,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<CommentHub>("/api/Comment/Create");
+app.MapHub<PostHub>("/api/Post/Create");
 
 app.Run();

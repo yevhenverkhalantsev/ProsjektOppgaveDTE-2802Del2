@@ -1,9 +1,8 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using ProsjektOppgaveWebAPI.Database.Entities;
-using ProsjektOppgaveWebAPI.Models;
-using ProsjektOppgaveWebAPI.Services;
+using ProsjektOppgaveWebAPI.Hubs;
+using ProsjektOppgaveWebAPI.Models.Comment;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.PostServices;
 using ProsjektOppgaveWebAPI.Services.PostServices.Models;
@@ -16,11 +15,13 @@ public class PostController : ControllerBase
 {
     private readonly IBlogService _blogService;
     private readonly IPostService _postService;
+    private readonly IHubContext<PostHub> _hubContext;
 
-    public PostController(IBlogService blogService, IPostService postService)
+    public PostController(IBlogService blogService, IPostService postService, IHubContext<PostHub> hubContext)
     {
         _blogService = blogService;
         _postService = postService;
+        _hubContext = hubContext;
     }
 
     [HttpGet]
@@ -52,10 +53,16 @@ public class PostController : ControllerBase
             });
         }
 
-        return CreatedAtAction("GetPost", new
+        await _hubContext.Clients.All.SendAsync("PostCreateNotify", new
         {
-            id = response.Value
+            PostId = response.Value,
+            Title = vm.Title,
+            Content = vm.Content,
+            BlogId = vm.BlogId,
+            Comments = new List<CommentViewModel>()
         });
+        
+        return Ok(response.Value);
     }
 
     

@@ -1,6 +1,6 @@
 ﻿<AuthorizeView>
     <Authorized>
-        @context.User.Identity.Name
+        <span class="oi oi-person" style="margin-right: 10px"></span> @context.User.Identity.Name
         <a class="btn btn-outline-secondary" href="logout">Sign Out</a>
     </Authorized>
     <NotAuthorized>

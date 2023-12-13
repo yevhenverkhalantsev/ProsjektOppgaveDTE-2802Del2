@@ -57,22 +57,6 @@ public class CommentController : ControllerBase
         return Ok(response.Value);
     }  
     
-    [HttpPost]
-    [Route("/TestNotify")]
-    public async Task<IActionResult> TestNotify([FromBody] CreateCommentHttpPostModel vm)
-    {
-        CreateCommentHttpPostModel createCommentHttpPostModel = new CreateCommentHttpPostModel()
-        {
-            PostId = -1,
-            Text = "Test"
-        };
-        
-        await _hubContext.Clients.All.SendAsync("CreateCommentHandler", createCommentHttpPostModel);
-        
-        return Ok(createCommentHttpPostModel);
-    }
-    
-    
     [Authorize]
     [HttpPut("{id:int}")]
     public IActionResult Update([FromRoute] int id, [FromBody] Comment comment)

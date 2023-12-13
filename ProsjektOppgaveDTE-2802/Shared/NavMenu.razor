@@ -2,7 +2,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BlogModel Del-2</a>
+        <a class="oi oi-home navbar-brand" href=""> Blog Del-2</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,31 +11,11 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
         @if (_isUserAuthenticated)
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="blog">
-                    <span class="oi oi-browser" aria-hidden="true"></span> Blog
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="post">
-                    <span class="oi oi-browser" aria-hidden="true"></span> Post
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="comment">
-                    <span class="oi oi-browser" aria-hidden="true"></span> Comment
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="tags">
-                    <span class="oi oi-browser" aria-hidden="true"></span> Tags
+                <NavLink class="nav-link" href="Blog/Create">
+                    <span class="oi oi-grid-four-up" aria-hidden="true"></span> Create Blog
                 </NavLink>
             </div>
         }
