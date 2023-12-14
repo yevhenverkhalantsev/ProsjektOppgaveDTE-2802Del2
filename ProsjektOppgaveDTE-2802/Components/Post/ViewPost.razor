@@ -1,6 +1,8 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using System.Net.Http.Headers
 @using Microsoft.AspNetCore.SignalR.Client
+@using ProsjektOppgaveBlazor.Pages.Blog
+@using ProsjektOppgaveBlazor.Pages.Post
 @inject IJSRuntime JsRuntime
 
 
@@ -37,8 +39,8 @@
                                     <div id="comment-@comment.CommentId" class="d-flex justify-content-between align-items-center border-bottom mb-2 pb-2">
                                         <span>@comment.Text</span>
                                         <div>
-                                            <button class="btn btn-sm btn-outline-warning" onclick="" data-bs-target="#edit-comment-modal" data-bs-toggle="modal">Edit</button>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="">Delete</button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="" >Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="DeleteCommentHandler">Delete</button>
                                         </div>
                                     </div>
                                 }
@@ -52,27 +54,50 @@
                         
                     </div>
                         <div class="card-footer">
-                            <input type="button" class="btn btn-warning" value="Edit" id="edit-post-" data-bs-target="#edit-post-modal" data-bs-toggle="modal" onclick=""/>
-                            <input type="button" class="btn btn-danger" value="Delete" id="remove-post-"/>
+                            <input type="button" class="btn btn-warning" value="Edit" @onclick="OnUpdatePostHandler"/>
+                            <input type="button" class="btn btn-danger" value="Delete" @onclick="DeletePostHandler"/>
                         </div>
                 </div>
                 <br />
             </div>
 @code {
     
+    [CascadingParameter] public View ParentComponent { get; set; } 
     [Parameter] public PostViewModel Post { get; set; }
+    [Parameter] public BlogViewModel BlogView { get; set; }
 
     private CommentModel _commentModel = new CommentModel();
     HttpClient _httpClient = new HttpClient();
 
     protected override async Task OnInitializedAsync()
     {
-        HubConnection hubConnection = new HubConnectionBuilder()
+
+        HubConnection hubConnectionPostUpdate = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/Post/Update")
+            .Build();
+        
+        HubConnection hubConnectionCommentCreate = new HubConnectionBuilder()
             .WithUrl("https://localhost:7022/api/Comment/Create")
             .Build();
-                
-        await hubConnection.StartAsync();
-        hubConnection.On<CommentViewModel>("CreateCommentHandler", async (comment) =>
+        
+        HubConnection hubConnectionCommentDelete = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/Comment/Delete")
+            .Build();
+        
+        
+        await hubConnectionPostUpdate.StartAsync(); 
+        hubConnectionPostUpdate.On<PostViewModel>("UpdatePostNotify", async (post) =>
+        {
+            if (Post.PostId == post.PostId)
+            {
+                Post = post;
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+
+        
+        await hubConnectionCommentCreate.StartAsync();
+        hubConnectionCommentCreate.On<CommentViewModel>("CreateCommentHandler", async (comment) =>
         {
             if (Post.PostId == comment.PostId)
             {
@@ -84,11 +109,34 @@
                 await InvokeAsync(StateHasChanged);
             }
         });
-
-                
-        StateHasChanged();
+        
+        await hubConnectionCommentDelete.StartAsync();
+        hubConnectionCommentDelete.On<int>("DeleteCommentHandler", async (commentId) =>
+        {
+            var commentToDelete = Post.Comments.FirstOrDefault(c => c.CommentId == commentId);
+            if (commentToDelete != null)
+            {
+                Post.Comments.Remove(commentToDelete);
+                await InvokeAsync(StateHasChanged);
+            }
+        });
     }
 
+    private async Task DeletePostHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Post/Delete/{Post.PostId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await response.Content.ReadFromJsonAsync<bool>();
+            }
+        }
+    }
+    
     private async Task CreateNewCommentHandler(MouseEventArgs e)
     {
         if (e.Button == 0)
@@ -102,6 +150,29 @@
             {
                 var createdCommentId = await response.Content.ReadFromJsonAsync<int>();
             }
+        }
+    }
+    
+    private async Task DeleteCommentHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Comment/Delete/{Post.Comments[0].CommentId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await response.Content.ReadFromJsonAsync<bool>();
+            }
+        }
+    }
+    
+    private async Task OnUpdatePostHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            ParentComponent.OpenEditPostModal(Post);
         }
     }
 }

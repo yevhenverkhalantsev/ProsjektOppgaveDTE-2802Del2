@@ -2,6 +2,8 @@
 @using ProsjektOppgaveBlazor.Components.Post
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using Newtonsoft.Json
+@using Microsoft.AspNetCore.SignalR.Client
+@using ProsjektOppgaveBlazor.Pages.Post
 
 <div class="container">
     <div class="card">
@@ -23,67 +25,69 @@
     }
 }
         
-        <div class="modal fade" id="edit-comment-modal" tabindex="-1" >
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        Edit comment
-                    </div>
-                    <div class="modal-body">
-                        <input type="text" class="form-control" id="edit-comment"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="btn-save-comment" type="button" style="margin-bottom: 10px" class="btn btn-success" onclick="saveCommentData()">Save</button>
-                        <input class="d-none" id="close-edit-comment-button" data-dismiss="modal"/>
-                    </div>
-                </div>
+<div class="modal fade" id="edit-comment-modal" tabindex="-1" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Edit comment
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="edit-comment"/>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-save-comment" type="button" style="margin-bottom: 10px" class="btn btn-success" onclick="saveCommentData()">Save</button>
+                <input class="d-none" id="close-edit-comment-button" data-dismiss="modal"/>
             </div>
         </div>
+    </div>
+</div>
 
-            <div class="modal fade" id="edit-post-modal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header" id="edit-post-modal-header">Edit post: </div>
-                        <div class="modal-body bg-secondary rounded h-100 p-4">
-
-                            <div class="mb-3">
-                                <label class="form-label">Title</label>
-                                <input type="text" class="form-control" id="edit-post-title">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Content</label>
-                                <input type="text" class="form-control" id="edit-post-content">
-                            </div>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button id="btn-save" type="button" style="margin-bottom: 10px" class="btn btn-success" onclick="savePostData()">Save</button>
-
-                            <div id="edit-success-label" class="alert alert-success d-none">
-                                Updated successfully!
-                            </div>
-                            <div id="edit-error-label" class="alert alert-danger d-none">
-                                Error on updated!
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <EditPostModal @ref="_editPostModal"/>
+    
+</div>
 
 @code {
 
     [Parameter]
     public int Id { get; set; }
-
+    
     private HttpClient _httpClient = new HttpClient();
     private BlogViewModel _blogModel = new BlogViewModel();
-
-    public async Task CreateNewPostHandler(PostViewModel post)
+    private EditPostModal _editPostModal;
+    
+    protected override async Task OnInitializedAsync()
     {
-        _blogModel.Posts.Add(post);
-        await InvokeAsync(StateHasChanged);
+        
+        HubConnection hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/post/create")
+            .Build();
+
+        await hubConnection.StartAsync();
+        hubConnection.On<PostViewModel>("PostCreateNotify", async (post) =>
+        {
+            if (post.BlogId == Id)
+            {
+                _blogModel.Posts.Add(post);
+            }
+            await InvokeAsync(StateHasChanged);
+        });
+        
+        
+        HubConnection hubConnectionPostDelete = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/Post/Delete")
+            .Build();
+        
+        await hubConnectionPostDelete.StartAsync();
+        hubConnectionPostDelete.On<long>("PostDeleteNotify", async (postId) =>
+        {
+            PostViewModel post = _blogModel.Posts.FirstOrDefault(x=>x.PostId == postId);
+
+            if (post != null)
+            {
+                _blogModel.Posts.Remove(post);
+            }
+            await InvokeAsync(StateHasChanged);
+        });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -99,10 +103,9 @@
             }
         }
     }
-    
-    public void AppendPost(PostViewModel post)
+
+    public void OpenEditPostModal(PostViewModel post)
     {
-        _blogModel.Posts.Add(post);
-        StateHasChanged();
+        _editPostModal.OpenModal(post);
     }
 }

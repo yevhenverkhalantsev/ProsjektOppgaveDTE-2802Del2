@@ -81,11 +81,21 @@ public class CommentController : ControllerBase
         return Ok();
     }
     
-    
-    [Authorize]
-    [HttpDelete("{id:int}")]
-    public IActionResult Delete([FromRoute] int id)
+    [HttpDelete]
+    [Route("[action]/{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        return Ok();
+        var response = await _commentService.Delete(id);
+        if (response.IsError)
+        {
+            return BadRequest(new
+            {
+                responseMesage = response.ErrorMessage
+            });
+        }
+        
+        await _hubContext.Clients.All.SendAsync("DeleteCommentHandler", id);
+        
+        return Ok(response.Value);
     }
 }

@@ -11,8 +11,10 @@ public interface IPostService
 
     Task<ResponseService<Post>> GetPost(int id);
     
-    Task<ResponseService<long>> SavePost(CreatePostHttpPostModel vm);
+    Task<ResponseService<int>> SavePost(CreatePostHttpPostModel vm);
 
-    Task DeletePost(int id, IPrincipal principal);
+    Task<ResponseService<bool>> DeletePost(int postId);
+    
+    Task<ResponseService<Post>> UpdatePost(UpdatePostHttpPutModel vm);
     
 }

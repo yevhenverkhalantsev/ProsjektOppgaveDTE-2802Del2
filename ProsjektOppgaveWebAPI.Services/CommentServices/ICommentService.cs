@@ -13,5 +13,5 @@ public interface ICommentService
     
     Task<ResponseService<int>> Save(CreateCommentHttpPostModel vm);
 
-    Task Delete(int id, IPrincipal principal);
+    Task<ResponseService<bool>> Delete(int id);
 }

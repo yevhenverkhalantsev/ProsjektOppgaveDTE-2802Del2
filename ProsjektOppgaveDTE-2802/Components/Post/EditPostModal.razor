@@ -1,11 +1,10 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using System.Net.Http.Headers
-@using Microsoft.AspNetCore.SignalR.Client
 @using ProsjektOppgaveBlazor.Pages.Blog
 @inject IJSRuntime JsRuntime
 
-<input type="button" class="btn btn-outline-dark float-end" value="add post" @onclick="() => _modalDialog.Open()"/>
-<ModalDialog Title="Create new post" @ref="_modalDialog">
+
+<ModalDialog Title="Edit post" @ref="_modalDialog">
                 <div class="modal-body bg-secondary rounded h-100 p-4">
     
                     <div class="mb-3">
@@ -21,7 +20,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="btnCreate" type="button" style="margin-bottom: 10px" class="btn btn-success" 
-                            @onclick="CreateNewPostHandler">Create</button>
+                            @onclick="EditPostHandler">Save</button>
     
                     <div id="create-success-label" class="alert alert-success d-none">
                         Created successfully!
@@ -34,25 +33,17 @@
 
 @code {
     
-    [CascadingParameter]
-    public View ParentComponent { get; set; }
-    
-    [Parameter]
-    public int BlogId { get; set; }
-    
+    private PostViewModel _postModel = new PostViewModel();
     private ModalDialog _modalDialog = new ModalDialog();
-    private PostModel _postModel = new PostModel();
     private HttpClient _httpClient = new HttpClient();
     private ElementReference _hideModalBtn = new ElementReference();
     
-    private async Task CreateNewPostHandler(MouseEventArgs e)
+    private async Task EditPostHandler(MouseEventArgs e)
     {
         if (e.Button == 0)
         {
-            _postModel.BlogId = BlogId;
-            
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken"));
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/post/create", _postModel);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/post/update", _postModel);
             if (response.IsSuccessStatusCode)
             {
                 _modalDialog.Close();
@@ -60,5 +51,13 @@
                 _postModel.Content = "";
             }
         }
+    }
+    
+    public void OpenModal(PostViewModel postModel)
+    {
+        _modalDialog.Open();
+        _postModel = postModel;
+        
+        StateHasChanged();
     }
 }

@@ -9,4 +9,9 @@ public class CommentHub: Hub
     {
         await Clients.All.SendAsync("CreateCommentHandler", vm);
     }
+    
+    public async Task NotifyAboutDelete(int id)
+    {
+        await Clients.All.SendAsync("DeleteCommentHandler", id);
+    }
 }

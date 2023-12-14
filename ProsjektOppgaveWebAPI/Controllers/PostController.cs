@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using ProsjektOppgaveWebAPI.Database.Entities;
@@ -6,6 +7,7 @@ using ProsjektOppgaveWebAPI.Models.Comment;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.PostServices;
 using ProsjektOppgaveWebAPI.Services.PostServices.Models;
+using ProsjektOppgaveWebAPI.Services.Response;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
@@ -64,34 +66,47 @@ public class PostController : ControllerBase
         
         return Ok(response.Value);
     }
-
     
-    // [Authorize]
-    // [HttpPut("{id:int}")]
-    // public Task<IActionResult> Update([FromRoute] int id, [FromBody] Post post)
-    // {
-    //     // if (id != post.PostId)
-    //     //     return BadRequest();
-    //     //
-    //     // var existingPost = await _postService.GetPost(id);
-    //     // if (existingPost is null)
-    //     //     return NotFound();
-    //     //
-    //     // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    //     // if (existingPost.Value.OwnerId != userId)
-    //     // {
-    //     //     return Unauthorized();
-    //     // }
-    //     //
-    //     // _postService.SavePost(post, User);
-    //     //
-    //      return
-    // }
-
-    
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    [HttpPost]
+    [Route("[action]")]
+    public async Task<IActionResult> Update([FromBody] UpdatePostHttpPutModel vm)
     {
+        var response = await _postService.UpdatePost(vm);
+        if (response.IsError)
+        {
+            return BadRequest(new
+            {
+                responseMesage = response.ErrorMessage
+            });
+        }
+        await _hubContext.Clients.All.SendAsync("UpdatePostNotify", new
+        {
+            PostId = vm.PostId,
+            Title = vm.Title,
+            Content = vm.Content,
+            BlogId = response.Value.BlogId,
+            Comments = response.Value.Comments
+        });
+
         return Ok();
+    }
+
+    
+    [HttpDelete]
+    [Route("[action]/{postId:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int postId)
+    {
+        var response = await _postService.DeletePost(postId);
+        if (response.IsError)
+        {
+            return BadRequest(new
+            {
+                responseMesage = response.ErrorMessage
+            });
+        }
+
+        await _hubContext.Clients.All.SendAsync("PostDeleteNotify", postId);
+        
+        return Ok(response.Value);
     }
 }

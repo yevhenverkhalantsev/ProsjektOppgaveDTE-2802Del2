@@ -66,8 +66,23 @@ public class CommentService : ICommentService
         
     }
     
-    public async Task Delete(int id, IPrincipal principal)
+    public async Task<ResponseService<bool>> Delete(int id)
     {
+        var comment = await _commentRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.CommentId == id);
+        if (comment == null)
+        {
+            throw new Exception(Errors.COMMENT_NOT_FOUND_ERROR);
+        }
+        try
+        {
+            await _commentRepository.Delete(comment);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(Errors.CANT_DELETE_COMMENT_ERROR);
+        }
+        return ResponseService<bool>.Ok(true);
     }
     
 }

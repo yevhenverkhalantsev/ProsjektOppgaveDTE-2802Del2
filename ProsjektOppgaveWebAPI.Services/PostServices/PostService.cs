@@ -41,7 +41,7 @@ public class PostService: IPostService
             .ToListAsync();
     }
     
-    public async Task<ResponseService<long>> SavePost(CreatePostHttpPostModel vm)
+    public async Task<ResponseService<int>> SavePost(CreatePostHttpPostModel vm)
     {
         Post post = await _postRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Title == vm.Title 
@@ -66,23 +66,54 @@ public class PostService: IPostService
             throw new Exception(Errors.CANT_CREATE_POST_ERROR);
         }
 
-        return ResponseService<long>.Ok(post.PostId);
+        return ResponseService<int>.Ok(post.PostId);
     }
 
-    public async Task DeletePost(int id, IPrincipal principal)
+    public async Task<ResponseService<bool>> DeletePost(int postId)
     {
-        return;
-        // var user = await _manager.FindByNameAsync(principal.Identity.Name);
-        // var post = _db.Post.Find(id);
-        //
-        // if (post.Owner == user)
-        // {
-        //     _db.Post.Remove(post);
-        //     await _db.SaveChangesAsync();
-        // }
-        // else
-        // {
-        //     throw new UnauthorizedAccessException("You are not the owner of this post.");
-        // }
+        Post post = await _postRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.PostId == postId);
+    
+        if (post == null)
+        {
+            throw new Exception(Errors.POST_NOT_FOUND_ERROR);
+        }
+
+        try
+        {
+            await _postRepository.Delete(post);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(Errors.CANT_DELETE_POST_ERROR, e);
+        }
+
+        return ResponseService<bool>.Ok(true);
+    }
+
+    public async Task<ResponseService<Post>> UpdatePost(UpdatePostHttpPutModel vm)
+    {
+        Post post = await _postRepository.GetAll()
+            .Include(x => x.Comments)
+            .FirstOrDefaultAsync(x => x.PostId == vm.PostId);
+        
+        if (post == null)
+        {
+            return ResponseService<Post>.Error(Errors.POST_NOT_FOUND_ERROR);
+        }
+        
+        post.Title = vm.Title;
+        post.Content = vm.Content;
+        
+        try
+        {
+            await _postRepository.Update(post);
+        }
+        catch (Exception e)
+        {
+            return ResponseService<Post>.Error(Errors.CANT_UPDATE_POST_ERROR);
+        }
+        
+        return ResponseService<Post>.Ok(post);
     }
 }
