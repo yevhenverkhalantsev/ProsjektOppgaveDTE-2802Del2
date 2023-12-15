@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Services.Response;
 using ProsjektOppgaveWebAPI.Services.TagServices;
+using ProsjektOppgaveWebAPI.Services.TagServices.Models;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
-[Route("/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class TagController : ControllerBase
 {
@@ -18,17 +20,20 @@ public class TagController : ControllerBase
     }
 
 
-    [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Tag tag)
+    [Route("[action]")]
+    public async Task<IActionResult> Create([FromBody] CreateTagHttpPostModel vm)
     {
-        if (!ModelState.IsValid)
+        ResponseService<long> response = await _service.Create(vm);
+
+        if (response.IsError)
         {
-            return BadRequest(ModelState);
+            return BadRequest(new
+            {
+                responseMessage = response.ErrorMessage
+            });
         }
 
-        await _service.Save(tag);
-
-        return Ok();
+        return Ok(response.Value);
     }
 }

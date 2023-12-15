@@ -24,7 +24,6 @@ public class BlogService : IBlogService
     {
         return await _blogRepository.GetAll()
             .Include(x=>x.Posts)
-            .Include(x=>x.BlogTags)
             .Include(x=>x.Owner)
             .ToListAsync();
         
@@ -114,5 +113,14 @@ public class BlogService : IBlogService
         }
 
         return ResponseService<bool>.Ok(true);
+    }
+
+    public async Task<ICollection<Blog>> Search(string searchQuery)
+    {
+        return await _blogRepository.GetAll()
+            .Include(x => x.Posts)
+            .Include(x => x.Owner)
+            .Where(x => x.Name.Contains(searchQuery))
+            .ToListAsync();
     }
 }

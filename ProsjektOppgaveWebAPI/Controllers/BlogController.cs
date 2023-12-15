@@ -1,19 +1,13 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-using ProsjektOppgaveWebAPI.Common;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.EntityFramework.Repository;
 using ProsjektOppgaveWebAPI.Hubs;
-using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Models.Blog;
 using ProsjektOppgaveWebAPI.Models.Comment;
 using ProsjektOppgaveWebAPI.Models.Post;
-using ProsjektOppgaveWebAPI.Models.ViewModel;
-using ProsjektOppgaveWebAPI.Services;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.BlogServices.Models;
 
@@ -23,13 +17,11 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 [ApiController]
 public class BlogController : ControllerBase
 {
-    private readonly IGenericRepository<Blog> _blogRepository;
     private readonly IBlogService _service;
     private readonly IHubContext<BlogHub> _hubContext;
     
-    public BlogController(IGenericRepository<Blog> blogRepository, IBlogService service, IHubContext<BlogHub> hubContext)
+    public BlogController(IBlogService service, IHubContext<BlogHub> hubContext)
     {
-        _blogRepository = blogRepository;
         _service = service;
         _hubContext = hubContext;
     }
@@ -142,5 +134,15 @@ public class BlogController : ControllerBase
         await _hubContext.Clients.All.SendAsync("DeleteBlogHandler", id);
         
         return Ok(response.Value);
+    }
+    
+    [HttpGet]
+    [Route("[action]")]
+    public async Task<IActionResult> Search(string searchQuery)
+    {
+        return Ok(JsonConvert.SerializeObject(await _service.Search(searchQuery), new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        }));
     }
 }

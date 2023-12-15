@@ -16,4 +16,6 @@ public interface IBlogService
     Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal);
      
     Task<ResponseService<bool>> Delete(int id);
+    
+    Task<ICollection<Blog>> Search(string searchQuery);
 }

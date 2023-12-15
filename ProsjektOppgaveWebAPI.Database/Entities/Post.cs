@@ -10,9 +10,11 @@ public class Post
     public Blog Blog { get; set; }
     
     public ICollection<Comment> Comments { get; set; }
+    public ICollection<PostTags> PostTags { get; set; }
 
     public Post()
     {
         Comments = new List<Comment>();
+        PostTags = new List<PostTags>();
     }
 }

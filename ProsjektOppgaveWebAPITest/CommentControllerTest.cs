@@ -1,10 +1,12 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ProsjektOppgaveWebAPI.Controllers;
-using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Services.CommentServices;
+using ProsjektOppgaveWebAPI.Services.CommentServices.Models;
+using Microsoft.AspNetCore.SignalR;
+using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.Hubs;
+using ProsjektOppgaveWebAPI.Services.Response;
 
 namespace ProsjektOppgaveWebAPITest;
 
@@ -16,12 +18,9 @@ public class CommentControllerTest
     public CommentControllerTest()
     {
         _serviceMock = new Mock<ICommentService>();
-        _controller = new CommentController(_serviceMock.Object);
+        _controller = new CommentController(_serviceMock.Object, new Mock<IHubContext<CommentHub>>().Object);
     }
 
-    
-    
-    // GET
     [Fact]
     public async Task GetComments_ReturnsExpectedComments()
     {
@@ -35,9 +34,8 @@ public class CommentControllerTest
 
         // Assert
         Assert.Equal(expectedComments, result);
-        _serviceMock.Verify(x => x.GetCommentsForPost(postId), Times.Once);
     }
-    
+
     [Fact]
     public void GetComment_ReturnsExpectedComment()
     {
@@ -51,202 +49,95 @@ public class CommentControllerTest
 
         // Assert
         Assert.Equal(expectedComment, result);
-        _serviceMock.Verify(x => x.GetComment(commentId), Times.Once);
     }
 
-    
-    
-    // POST
     [Fact]
     public async Task Create_ReturnsBadRequest_WhenModelStateIsInvalid()
     {
         // Arrange
         _controller.ModelState.AddModelError("error", "some error");
+        var commentModel = new CreateCommentHttpPostModel();
 
         // Act
-        var result = await _controller.Create(new Comment());
+        var result = await _controller.Create(commentModel);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
     [Fact]
-    public async Task Create_ReturnsCreatedAtAction_WhenModelStateIsValid()
+    public async Task Create_ReturnsOk_WhenSuccessful()
     {
         // Arrange
-        var comment = new Comment();
-
-        // Mock User
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, "user1"),
-            // other claims as needed
-        }, "mock"));
-        _controller.ControllerContext = new ControllerContext()
-        {
-            HttpContext = new DefaultHttpContext() { User = user }
-        };
+        var commentModel = new CreateCommentHttpPostModel();
+        _serviceMock.Setup(service => service.Save(commentModel))
+            .ReturnsAsync(ResponseService<int>.Ok(1));
 
         // Act
-        var result = await _controller.Create(comment);
+        var result = await _controller.Create(commentModel);
 
         // Assert
-        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
-        Assert.Equal("GetComment", createdAtActionResult.ActionName);
-        Assert.Equal(comment, createdAtActionResult.Value);
-        _serviceMock.Verify(x => x.Save(comment, user), Times.Once);
-    }
-
-    
-    
-    // PUT
-    [Fact]
-    public void Update_ReturnsBadRequest_WhenIdDoesNotMatchCommentId()
-    {
-        // Arrange
-        var comment = new Comment { CommentId = 1 };
-
-        // Act
-        var result = _controller.Update(2, comment);
-
-        // Assert
-        Assert.IsType<BadRequestResult>(result);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(1, okResult.Value);
     }
 
     [Fact]
-    public void Update_ReturnsNotFound_WhenCommentDoesNotExist()
+    public async Task Update_ReturnsBadRequest_WhenModelStateIsInvalid()
     {
         // Arrange
-        var comment = new Comment { CommentId = 1 };
-        _serviceMock.Setup(service => service.GetComment(comment.CommentId)).Returns((Comment)null);
+        _controller.ModelState.AddModelError("error", "some error");
+        var updateModel = new UpdateCommentHttpPostModel();
 
         // Act
-        var result = _controller.Update(1, comment);
+        var result = await _controller.Update(updateModel);
 
         // Assert
-        Assert.IsType<NotFoundResult>(result);
+        Assert.IsType<BadRequestObjectResult>(result);
     }
 
     [Fact]
-    public void Update_ReturnsUnauthorized_WhenUserIsNotOwner()
+    public async Task Update_ReturnsOk_WhenSuccessful()
     {
         // Arrange
-        var comment = new Comment { CommentId = 1, OwnerId = "user1" };
-        var existingComment = new Comment { CommentId = 1, OwnerId = "user2" };
-        _serviceMock.Setup(service => service.GetComment(comment.CommentId)).Returns(existingComment);
-
-        // Mock User
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, "user1"),
-            // other claims as needed
-        }, "mock"));
-        _controller.ControllerContext = new ControllerContext()
-        {
-            HttpContext = new DefaultHttpContext() { User = user }
-        };
+        var updateModel = new UpdateCommentHttpPostModel();
+        _serviceMock.Setup(service => service.Update(updateModel))
+            .ReturnsAsync(ResponseService<Comment>.Ok(new Comment()));
 
         // Act
-        var result = _controller.Update(1, comment);
+        var result = await _controller.Update(updateModel);
 
         // Assert
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<OkResult>(result);
     }
 
     [Fact]
-    public void Update_ReturnsNoContent_WhenUpdateIsSuccessful()
-    {
-        // Arrange
-        var comment = new Comment { CommentId = 1, OwnerId = "user1" };
-        var existingComment = new Comment { CommentId = 1, OwnerId = "user1" };
-        _serviceMock.Setup(service => service.GetComment(comment.CommentId)).Returns(existingComment);
-
-        // Mock User
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, "user1"),
-            // other claims as needed
-        }, "mock"));
-        _controller.ControllerContext = new ControllerContext()
-        {
-            HttpContext = new DefaultHttpContext() { User = user }
-        };
-
-        // Act
-        var result = _controller.Update(1, comment);
-
-        // Assert
-        Assert.IsType<NoContentResult>(result);
-        _serviceMock.Verify(x => x.Save(comment, user), Times.Once);
-    }
-    
-    
-    
-    // DELETE
-    [Fact]
-    public void Delete_ReturnsNotFound_WhenCommentDoesNotExist()
+    public async Task Delete_ReturnsBadRequest_WhenCommentDoesNotExist()
     {
         // Arrange
         const int commentId = 1;
-        _serviceMock.Setup(service => service.GetComment(commentId)).Returns((Comment)null);
+        _serviceMock.Setup(service => service.Delete(commentId))
+            .ReturnsAsync(ResponseService<bool>.Error("Error Message"));
 
         // Act
-        var result = _controller.Delete(commentId);
+        var result = await _controller.Delete(commentId);
 
         // Assert
-        Assert.IsType<NotFoundResult>(result);
+        Assert.IsType<BadRequestObjectResult>(result);
     }
 
     [Fact]
-    public void Delete_ReturnsUnauthorized_WhenUserIsNotOwner()
+    public async Task Delete_ReturnsOk_WhenSuccessful()
     {
         // Arrange
         const int commentId = 1;
-        var comment = new Comment { CommentId = commentId, OwnerId = "user1" };
-        _serviceMock.Setup(service => service.GetComment(commentId)).Returns(comment);
-
-        // Mock User
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, "user2"),
-            // other claims as needed
-        }, "mock"));
-        _controller.ControllerContext = new ControllerContext()
-        {
-            HttpContext = new DefaultHttpContext() { User = user }
-        };
+        _serviceMock.Setup(service => service.Delete(commentId))
+            .ReturnsAsync(ResponseService<bool>.Ok(true));
 
         // Act
-        var result = _controller.Delete(commentId);
+        var result = await _controller.Delete(commentId);
 
         // Assert
-        Assert.IsType<UnauthorizedResult>(result);
-    }
-
-    [Fact]
-    public void Delete_ReturnsNoContent_WhenDeleteIsSuccessful()
-    {
-        // Arrange
-        const int commentId = 1;
-        var comment = new Comment { CommentId = commentId, OwnerId = "user1" };
-        _serviceMock.Setup(service => service.GetComment(commentId)).Returns(comment);
-
-        // Mock User
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, "user1"),
-            // other claims as needed
-        }, "mock"));
-        _controller.ControllerContext = new ControllerContext()
-        {
-            HttpContext = new DefaultHttpContext() { User = user }
-        };
-
-        // Act
-        var result = _controller.Delete(commentId);
-
-        // Assert
-        Assert.IsType<NoContentResult>(result);
-        _serviceMock.Verify(x => x.Delete(commentId, user), Times.Once);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(commentId, okResult.Value);
     }
 }

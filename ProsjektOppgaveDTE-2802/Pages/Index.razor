@@ -2,20 +2,18 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using Newtonsoft.Json
 @using Microsoft.AspNetCore.SignalR.Client
-@using System.Net.Http.Headers
-@inject IJSRuntime JsRuntime
 
-<div class="input-group rounded">
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
-</div>
 <div class="container-fluid pt-4 px-4">
     <div class="bg-secondary text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h6 class="mb-0">Blogs</h6>
+            
+            <input type="text" class="form-control" placeholder="Search" style="max-width: 500px" @onchange="SearchHandler">
+            
         </div>
+        
+        
+        
         <div class="table-responsive">
             <table class="table text-start align-middle table-bordered table-hover mb-0">
                 <thead>
@@ -45,13 +43,11 @@
 </div>
 
 @code {
-
+    
     [Parameter] public int Id { get; set; }
     
-    private HttpClient _httpclient = new HttpClient();
+    private HttpClient _httpClient = new HttpClient();
     private BlogModel[] _blogs = new BlogModel[0];
-    
-    HttpClient _httpClient = new HttpClient();
         
     protected override async Task OnInitializedAsync()
     {
@@ -81,7 +77,7 @@
     {
         if (firstRender)
         {
-           HttpResponseMessage responseMessage = await _httpclient.GetAsync("https://localhost:7022/blogs");
+           HttpResponseMessage responseMessage = await _httpClient.GetAsync("https://localhost:7022/blogs");
               if (responseMessage.IsSuccessStatusCode)
               {
                   string _jsonResponse = await responseMessage.Content.ReadAsStringAsync();
@@ -98,5 +94,16 @@
         HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Blog/Delete/{blogId}");
     }
 
+    private async Task SearchHandler(ChangeEventArgs e)
+    {
+        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"https://localhost:7022/api/Blog/Search?searchQuery={e.Value.ToString()}");
+
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            string _jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+            _blogs = JsonConvert.DeserializeObject<BlogModel[]>(_jsonResponse);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
 
 }

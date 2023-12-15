@@ -19,15 +19,15 @@ public class BlogDbContext: DbContext
     public DbSet<Comment>? Comment { get; set; }
     public DbSet<IdentityUser>? AspNetUsers { get; set; }
     public DbSet<Tag>? Tag { get; set; }
+    
+    public DbSet<PostTags> PostTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         
         builder.ApplyConfiguration(new BlogConfiguration());
-        
-        builder.Entity<BlogTagRelations>()
-            .HasKey(bt => new { bt.BlogId, bt.TagId });
+        builder.ApplyConfiguration(new PostTagsConfiguration());
         
         // SEEDING PREPARATION
         var hasher = new PasswordHasher<IdentityUser>();

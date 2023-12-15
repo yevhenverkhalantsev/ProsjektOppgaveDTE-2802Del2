@@ -19,4 +19,6 @@ public static class Errors
     public const string COMMENT_NOT_FOUND_ERROR = "Comment not found";
     public const string CANT_DELETE_COMMENT_ERROR = "Can't delete comment";
     public const string CANT_UPDATE_COMMENT_ERROR = "Can't update comment";
+    public const string TAG_ALREADY_EXISTS = "Tag already exists";
+    public const string CANT_CREATE_TAG_ERROR = "Can't create tag";
 }

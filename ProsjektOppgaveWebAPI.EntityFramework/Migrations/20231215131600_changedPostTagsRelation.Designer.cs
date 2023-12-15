@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProsjektOppgaveWebAPI.EntityFramework;
 
@@ -10,9 +11,10 @@ using ProsjektOppgaveWebAPI.EntityFramework;
 namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231215131600_changedPostTagsRelation")]
+    partial class changedPostTagsRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.25");
@@ -71,15 +73,15 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e22406fb-2d08-4abd-8af9-38d2bb71e43c",
+                            Id = "b3115660-d27c-4f8b-ab7d-8186b1ec3cb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e425276d-c491-4695-9879-40f630d748ac",
+                            ConcurrencyStamp = "4f14936a-ce87-4bdb-9248-f8076a909370",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEM1YnUK9/zGDPoo5oT6PE0oL/RLWy88ThSMD+n4KhMsbQmbM4PuBz/HD+5Wh0L5/dw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO+Ku6G+WKmGMfwRLXVWFXtoXwa8AjdCWIpSoWsUHmdA5M8beWSMNSY8Y1utz+bkOw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -181,16 +183,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("UserFk")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Tag");
                 });
@@ -245,17 +238,6 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Post");
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Tag", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.Blog", b =>

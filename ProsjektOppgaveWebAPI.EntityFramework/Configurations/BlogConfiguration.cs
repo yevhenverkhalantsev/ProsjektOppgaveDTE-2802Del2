@@ -14,6 +14,7 @@ public class BlogConfiguration: IEntityTypeConfiguration<Blog>
         builder.Property(x => x.IsOpen).HasColumnName("IsOpen");
         
         builder.HasOne(x => x.Owner)
-            .WithMany().HasForeignKey(x => x.OwnerId);
+            .WithMany()
+            .HasForeignKey(x => x.OwnerId);
     }
 }
