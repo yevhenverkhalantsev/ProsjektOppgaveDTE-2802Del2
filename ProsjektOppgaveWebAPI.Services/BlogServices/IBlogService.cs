@@ -15,5 +15,5 @@ public interface IBlogService
     
     Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal);
      
-    Task<ResponseService> Delete(int id , IPrincipal principal);
+    Task<ResponseService<bool>> Delete(int id);
 }

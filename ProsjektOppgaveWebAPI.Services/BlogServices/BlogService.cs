@@ -93,29 +93,26 @@ public class BlogService : IBlogService
         }
     }
 
-    public async Task<ResponseService> Delete(int id, IPrincipal principal)
+
+    public async Task<ResponseService<bool>> Delete(int id)
     {
-        var user = await _manager.FindByNameAsync(principal.Identity.Name);
-        if (user == null)
+        Blog blog = await _blogRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.BlogId == id);
+
+        if (blog == null)
         {
-            return ResponseService.Error(Errors.USER_NOT_FOUND_ERROR);
+            throw new Exception(Errors.BLOG_NOT_FOUND_ERROR);
         }
 
-        Blog dbRecord = await _blogRepository.GetById(id);
-        if (dbRecord == null)
-        {
-            return ResponseService.Error(Errors.BLOG_NOT_FOUND_ERROR);
-        }
-        
         try
         {
-            await _blogRepository.Delete(dbRecord);
+            await _blogRepository.Delete(blog);
         }
         catch (Exception e)
         {
-            return ResponseService.Error(Errors.CANT_DELETE_BLOG_ERROR);
+            throw new Exception(Errors.CANT_DELETE_BLOG_ERROR);
         }
 
-        return ResponseService.Ok();
+        return ResponseService<bool>.Ok(true);
     }
 }

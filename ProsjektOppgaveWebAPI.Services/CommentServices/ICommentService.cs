@@ -12,6 +12,8 @@ public interface ICommentService
     Comment? GetComment(int id);
     
     Task<ResponseService<int>> Save(CreateCommentHttpPostModel vm);
-
+    
     Task<ResponseService<bool>> Delete(int id);
+    
+    Task<ResponseService<Comment>> Update(UpdateCommentHttpPostModel vm);
 }

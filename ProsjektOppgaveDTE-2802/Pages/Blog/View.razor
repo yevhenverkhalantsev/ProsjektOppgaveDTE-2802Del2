@@ -3,7 +3,7 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using Newtonsoft.Json
 @using Microsoft.AspNetCore.SignalR.Client
-@using ProsjektOppgaveBlazor.Pages.Post
+@using ProsjektOppgaveBlazor.Components.Comment
 
 <div class="container">
     <div class="card">
@@ -25,22 +25,7 @@
     }
 }
         
-<div class="modal fade" id="edit-comment-modal" tabindex="-1" >
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                Edit comment
-            </div>
-            <div class="modal-body">
-                <input type="text" class="form-control" id="edit-comment"/>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-save-comment" type="button" style="margin-bottom: 10px" class="btn btn-success" onclick="saveCommentData()">Save</button>
-                <input class="d-none" id="close-edit-comment-button" data-dismiss="modal"/>
-            </div>
-        </div>
-    </div>
-</div>
+    <EditCommentModal @ref="_editCommentModal"/>
 
     <EditPostModal @ref="_editPostModal"/>
     
@@ -53,6 +38,7 @@
     
     private HttpClient _httpClient = new HttpClient();
     private BlogViewModel _blogModel = new BlogViewModel();
+    private EditCommentModal _editCommentModal;
     private EditPostModal _editPostModal;
     
     protected override async Task OnInitializedAsync()
@@ -104,8 +90,15 @@
         }
     }
 
+    public void OpenEditCommentModal(CommentViewModel comment)
+    {
+        _editCommentModal.OpenCommentModal(comment);
+    }
+    
     public void OpenEditPostModal(PostViewModel post)
     {
         _editPostModal.OpenModal(post);
     }
+    
+    
 }

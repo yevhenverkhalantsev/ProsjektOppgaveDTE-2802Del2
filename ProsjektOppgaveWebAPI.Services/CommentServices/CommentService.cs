@@ -84,5 +84,27 @@ public class CommentService : ICommentService
         }
         return ResponseService<bool>.Ok(true);
     }
-    
+
+    public async Task<ResponseService<Comment>> Update(UpdateCommentHttpPostModel vm)
+    {
+        Comment comment = await _commentRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.CommentId == vm.CommentId);
+        if (comment == null)
+        {
+            return ResponseService<Comment>.Error(Errors.COMMENT_NOT_FOUND_ERROR);
+        }
+        
+        comment.Text = vm.Text;
+        
+        try
+        {
+            await _commentRepository.Update(comment);
+        }
+        catch (Exception e)
+        {
+            return ResponseService<Comment>.Error(Errors.CANT_UPDATE_COMMENT_ERROR);
+        }
+        
+        return ResponseService<Comment>.Ok(comment);
+    }
 }

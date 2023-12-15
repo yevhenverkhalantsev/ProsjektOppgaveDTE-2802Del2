@@ -1,6 +1,9 @@
 ﻿@page "/"
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using Newtonsoft.Json
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Net.Http.Headers
+@inject IJSRuntime JsRuntime
 
 <div class="input-group rounded">
     <form class="form-inline my-2 my-lg-0">
@@ -17,21 +20,21 @@
             <table class="table text-start align-middle table-bordered table-hover mb-0">
                 <thead>
                 <tr class="text-white">
-                    <th scope="col">Date</th>
                     <th scope="col">Author</th>
                     <th scope="col">Title</th>
                     <th scope="col">More info</th>
+                    <th scope="col">Delete blog</th>
                 </tr>
                 </thead>
                 <tbody>
-                
-                @for (int i = 0; i < _blogs.Length; i++)
+
+                @foreach (var t in _blogs)
                 {
                     <tr>
-                        <td></td>
-                        <td>@_blogs[i].Owner.UserName</td>
-                        <td>@_blogs[i].Name</td>
-                        <td><a class="btn btn-primary" href="/blogs/view/@_blogs[i].BlogId">More info</a></td>
+                        <td>@t.Owner.UserName</td>
+                        <td>@t.Name</td>
+                        <td><a class="btn btn-primary" href="/blogs/view/@t.BlogId">More info</a></td>
+                        <td><input type="button" class="btn btn-danger" value="Delete" @onclick="()=> DeleteBlogHandler(t.BlogId)"/></td>
                     </tr>
                 }
 
@@ -43,9 +46,37 @@
 
 @code {
 
+    [Parameter] public int Id { get; set; }
+    
     private HttpClient _httpclient = new HttpClient();
     private BlogModel[] _blogs = new BlogModel[0];
+    
+    HttpClient _httpClient = new HttpClient();
+        
+    protected override async Task OnInitializedAsync()
+    {
+       HubConnection hubConnectionBlogDelete = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/blog/delete")
+            .Build();
 
+        await hubConnectionBlogDelete.StartAsync();
+        hubConnectionBlogDelete.On<int>("DeleteBlogHandler", async (id) =>
+        {
+            BlogModel[] temp = new BlogModel[_blogs.Length - 1];
+            for ( int i = 0, j = 0; i < _blogs.Length; i++)
+            {
+                if (_blogs[i].BlogId != id)
+                {
+                    temp[j] = _blogs[i];
+                    j++;
+                }
+            }
+            _blogs = temp;
+
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -58,6 +89,13 @@
                   StateHasChanged();
               }
         }
+    }
+    
+    private async Task DeleteBlogHandler(int blogId)
+    {
+        // string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+        // _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Blog/Delete/{blogId}");
     }
 
 

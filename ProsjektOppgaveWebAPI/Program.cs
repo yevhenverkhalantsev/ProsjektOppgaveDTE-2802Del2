@@ -88,10 +88,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<CommentHub>("/api/Comment/Create");
+app.MapHub<CommentHub>("/api/Comment/Update");
 app.MapHub<CommentHub>("/api/Comment/Delete");
 
 app.MapHub<PostHub>("/api/Post/Create");
 app.MapHub<PostHub>("/api/Post/Update");
 app.MapHub<PostHub>("/api/Post/Delete");
+
+app.MapHub<BlogHub>("/api/Blog/Create");
+app.MapHub<BlogHub>("/api/Blog/Delete");
 
 app.Run();

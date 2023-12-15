@@ -1,0 +1,42 @@
+<div class="modal @_modalClass" style="display: @_modalDisplay" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">@Title
+                </div>
+                @ChildContent
+                </div>
+        </div>
+    </div>
+
+@if(_showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private string _modalDisplay = "none;";
+    private string _modalClass = "";
+    private bool _showBackdrop = false;
+
+    public void OpenComment()
+    {
+        _modalDisplay = "block";
+        _modalClass = "show";
+        _showBackdrop = true;
+    }
+
+    public void CloseComment()
+    {
+        _modalDisplay = "none";
+        _modalClass = "";
+        _showBackdrop = false;
+        StateHasChanged();
+    }
+
+}

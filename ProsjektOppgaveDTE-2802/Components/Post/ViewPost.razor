@@ -3,6 +3,8 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using ProsjektOppgaveBlazor.Pages.Blog
 @using ProsjektOppgaveBlazor.Pages.Post
+@using ProsjektOppgaveBlazor.Components.Comment
+
 @inject IJSRuntime JsRuntime
 
 
@@ -36,13 +38,9 @@
                                 
                                 @foreach (CommentViewModel comment in Post.Comments)
                                 {
-                                    <div id="comment-@comment.CommentId" class="d-flex justify-content-between align-items-center border-bottom mb-2 pb-2">
-                                        <span>@comment.Text</span>
-                                        <div>
-                                            <button class="btn btn-sm btn-outline-warning" onclick="" >Edit</button>
-                                            <button class="btn btn-sm btn-outline-danger" @onclick="DeleteCommentHandler">Delete</button>
-                                        </div>
-                                    </div>
+                                    <CascadingValue Value="this">
+                                        <ViewComment Comment="comment"/>
+                                    </CascadingValue>
                                 }
 
                                     <div class="input-group mb-3">
@@ -80,6 +78,10 @@
             .WithUrl("https://localhost:7022/api/Comment/Create")
             .Build();
         
+        HubConnection hubConnectionCommentUpdate = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/Comment/Update")
+            .Build();
+        
         HubConnection hubConnectionCommentDelete = new HubConnectionBuilder()
             .WithUrl("https://localhost:7022/api/Comment/Delete")
             .Build();
@@ -94,7 +96,6 @@
                 await InvokeAsync(StateHasChanged);
             }
         });
-
         
         await hubConnectionCommentCreate.StartAsync();
         hubConnectionCommentCreate.On<CommentViewModel>("CreateCommentHandler", async (comment) =>
@@ -108,6 +109,16 @@
                 _commentModel.Text = String.Empty;
                 await InvokeAsync(StateHasChanged);
             }
+        });
+        
+        await hubConnectionCommentUpdate.StartAsync();
+        hubConnectionCommentUpdate.On<CommentViewModel>("UpdateCommentNotify", async (comment) =>
+        {
+            // if (Post.PostId == comment.PostId)
+            // {
+            //     Comment = comment;
+            //     await InvokeAsync(StateHasChanged);
+            // }
         });
         
         await hubConnectionCommentDelete.StartAsync();
@@ -153,26 +164,16 @@
         }
     }
     
-    private async Task DeleteCommentHandler(MouseEventArgs e)
-    {
-        if (e.Button == 0)
-        {
-            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Comment/Delete/{Post.Comments[0].CommentId}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                await response.Content.ReadFromJsonAsync<bool>();
-            }
-        }
-    }
-    
     private async Task OnUpdatePostHandler(MouseEventArgs e)
     {
         if (e.Button == 0)
         {
             ParentComponent.OpenEditPostModal(Post);
         }
+    }
+
+    public void OpenEditCommentModal(CommentViewModel commentViewModel)
+    {
+        ParentComponent.OpenEditCommentModal(commentViewModel);
     }
 }

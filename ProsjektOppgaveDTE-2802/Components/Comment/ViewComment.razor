@@ -1,0 +1,62 @@
+@using ProsjektOppgaveBlazor.Data.CommonModels
+@using System.Net.Http.Headers
+@using Microsoft.AspNetCore.SignalR.Client
+@using ProsjektOppgaveBlazor.Components.Post
+@inject IJSRuntime JsRuntime
+
+<div class="d-flex justify-content-between align-items-center border-bottom mb-2 pb-2">
+    <span>@Comment.Text</span>
+    <div>
+        <button class="btn btn-sm btn-outline-warning" @onclick="OnUpdateCommentHandler">Edit</button>
+        <button class="btn btn-sm btn-outline-danger" @onclick="DeleteCommentHandler">Delete</button>
+    </div>
+</div>
+
+@code
+{
+    [CascadingParameter]
+    public ViewPost ParentComponent { get; set; }
+    
+    [Parameter]
+    public CommentViewModel Comment { get; set; }
+    
+    private HttpClient _httpClient = new HttpClient();
+
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection updateCommentConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/comment/update")
+            .Build();
+        
+        await updateCommentConnection.StartAsync();
+        updateCommentConnection.On<CommentViewModel>("UpdateCommentNotify", async (comment) =>
+        {
+            if (Comment.CommentId == comment.CommentId)
+            {
+                Comment.Text = comment.Text;
+                await InvokeAsync(StateHasChanged);
+            }
+            
+        });
+    }
+
+    private async Task OnUpdateCommentHandler(MouseEventArgs e)
+    {
+        ParentComponent.OpenEditCommentModal(Comment);
+    }
+    
+    private async Task DeleteCommentHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Comment/Delete/{Comment.CommentId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await response.Content.ReadFromJsonAsync<bool>();
+            }
+        }
+    }
+}

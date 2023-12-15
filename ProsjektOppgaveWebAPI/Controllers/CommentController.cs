@@ -57,27 +57,25 @@ public class CommentController : ControllerBase
         return Ok(response.Value);
     }  
     
-    [Authorize]
-    [HttpPut("{id:int}")]
-    public IActionResult Update([FromRoute] int id, [FromBody] Comment comment)
+    [HttpPost]
+    [Route("[action]")]
+    public async Task<IActionResult> Update([FromBody] UpdateCommentHttpPostModel vm)
     {
-        // if (id != comment.CommentId)
-        //     return BadRequest();
-        //
-        // var existingComment = _service.GetComment(id);
-        // if (existingComment is null)
-        //     return NotFound();
-        //
-        // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        // if (existingComment.OwnerId != userId)
-        // {
-        //     return Unauthorized();
-        // }
-        //
-        // _service.Save(comment, User);
-        //
-        // return NoContent();
-
+        var response = await _commentService.Update(vm);
+        if (response.IsError)
+        {
+            return BadRequest(new
+            {
+                responseMesage = response.ErrorMessage
+            });
+        }
+        await _hubContext.Clients.All.SendAsync("UpdateCommentNotify", new
+        {
+            CommentId = vm.CommentId,
+            Text = vm.Text,
+            PostId = response.Value.PostId
+        });
+        
         return Ok();
     }
     

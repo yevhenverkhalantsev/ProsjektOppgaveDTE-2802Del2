@@ -2,8 +2,12 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using ProsjektOppgaveWebAPI.Common;
 using ProsjektOppgaveWebAPI.Database.Entities;
+using ProsjektOppgaveWebAPI.EntityFramework.Repository;
+using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Models;
 using ProsjektOppgaveWebAPI.Models.Blog;
 using ProsjektOppgaveWebAPI.Models.Comment;
@@ -19,11 +23,15 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 [ApiController]
 public class BlogController : ControllerBase
 {
+    private readonly IGenericRepository<Blog> _blogRepository;
     private readonly IBlogService _service;
+    private readonly IHubContext<BlogHub> _hubContext;
     
-    public BlogController(IBlogService service)
+    public BlogController(IGenericRepository<Blog> blogRepository, IBlogService service, IHubContext<BlogHub> hubContext)
     {
+        _blogRepository = blogRepository;
         _service = service;
+        _hubContext = hubContext;
     }
 
 
@@ -117,26 +125,22 @@ public class BlogController : ControllerBase
         //
         // return NoContent();
     }
-
     
-    [Authorize]
     [HttpDelete]
-    [Route("{id:int}")]
-    public IActionResult Delete([FromRoute] int id)
+    [Route("[action]/{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        return BadRequest();
-        // var blog = _service.GetBlog(id);
-        // if (blog is null)
-        //     return NotFound();
-        //
-        // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        // if (blog.OwnerId != userId)
-        // {
-        //     return Unauthorized();
-        // }
-        //
-        // _service.Delete(id, User);
-        //
-        // return NoContent();
+        var response = await _service.Delete(id);
+        if (response.IsError)
+        {
+            return BadRequest(new
+            {
+                responseMesage = response.ErrorMessage
+            });
+        }
+        
+        await _hubContext.Clients.All.SendAsync("DeleteBlogHandler", id);
+        
+        return Ok(response.Value);
     }
 }
