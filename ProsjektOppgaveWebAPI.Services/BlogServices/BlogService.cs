@@ -54,14 +54,14 @@ public class BlogService : IBlogService
         return blogs;
     }
 
-    public async Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal)
+    public async Task<ResponseService<Blog>> Save(CreateBlogHttpPostModel vm, IPrincipal principal)
     {
         try
         {
         var user = await _manager.FindByNameAsync(principal.Identity?.Name);
         if (user == null)
         {
-            return ResponseService<long>.Error(Errors.USER_NOT_FOUND_ERROR);
+            return ResponseService<Blog>.Error(Errors.USER_NOT_FOUND_ERROR);
         }
 
         
@@ -69,7 +69,7 @@ public class BlogService : IBlogService
             .FirstOrDefaultAsync(x => x.Name == vm.Title && x.OwnerId == user.Id);
         if (dbRecord != null)
         {
-            return ResponseService<long>.Error(Errors.BLOG_ALREADY_EXISTS_ERROR);
+            return ResponseService<Blog>.Error(Errors.BLOG_ALREADY_EXISTS_ERROR);
         }
         
         dbRecord = new Blog()
@@ -83,12 +83,12 @@ public class BlogService : IBlogService
             await _blogRepository.Create(dbRecord);
 
         
-        return ResponseService<long>.Ok(dbRecord.BlogId);
+        return ResponseService<Blog>.Ok(dbRecord);
         
         }
         catch (Exception e)
         {
-            return ResponseService<long>.Error(Errors.CANT_CREATE_BLOG_ERROR);
+            return ResponseService<Blog>.Error(Errors.CANT_CREATE_BLOG_ERROR);
         }
     }
 

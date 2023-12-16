@@ -15,4 +15,9 @@ public class Blog
     public IdentityUser Owner { get; set; }
     
     public List<Post> Posts { get; set; }
+
+    public Blog()
+    {
+        Posts = new List<Post>();
+    }
 }

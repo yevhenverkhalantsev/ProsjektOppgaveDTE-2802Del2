@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProsjektOppgaveWebAPI.Database.Entities;
-using ProsjektOppgaveWebAPI.Models;
+using ProsjektOppgaveWebAPI.Models.Post;
+using ProsjektOppgaveWebAPI.Models.Tag;
 using ProsjektOppgaveWebAPI.Services.Response;
 using ProsjektOppgaveWebAPI.Services.TagServices;
 using ProsjektOppgaveWebAPI.Services.TagServices.Models;
@@ -24,7 +23,7 @@ public class TagController : ControllerBase
     [Route("[action]")]
     public async Task<IActionResult> Create([FromBody] CreateTagHttpPostModel vm)
     {
-        ResponseService<long> response = await _service.Create(vm);
+        var response = await _service.Create(vm);
 
         if (response.IsError)
         {
@@ -34,6 +33,25 @@ public class TagController : ControllerBase
             });
         }
 
-        return Ok(response.Value);
+        return Ok(new HttpGetTagModel()
+        {
+            Id = response.Value.Id,
+            Name = response.Value.Name,
+            Posts = new List<PostViewModel>()
+        });
+    }
+
+    [HttpGet]
+    [Route("[action]")]
+    public async Task<IActionResult> GetAll(string userName)
+    {
+        var tags = await _service.GetAll(userName);
+        
+        return Ok(tags.Select(x=> new HttpGetTagModel()
+        {
+            Id = x.Id,
+            Name = x.Name,
+            Posts = new List<PostViewModel>()
+        }));
     }
 }

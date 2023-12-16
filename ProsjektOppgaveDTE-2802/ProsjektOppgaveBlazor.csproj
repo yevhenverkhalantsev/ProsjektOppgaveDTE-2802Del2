@@ -21,6 +21,14 @@
   
   <ItemGroup>
     <ProjectReference Include="..\ProsjektOppgaveBlazor.Data\ProsjektOppgaveBlazor.Data.csproj" />
+    <ProjectReference Include="..\ProsjektOppgaveBlazor.Services\ProsjektOppgaveBlazor.Services.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Comment\Comments.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Comment\EditComment.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Post\EditPost.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Post\Posts.razor" />
   </ItemGroup>
 
 </Project>

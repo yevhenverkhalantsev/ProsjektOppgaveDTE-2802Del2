@@ -1,13 +1,15 @@
-namespace ProsjektOppgaveBlazor.Data.CommonModels;
+using ProsjektOppgaveWebAPI.Models.Post;
 
-public class TagModel
+namespace ProsjektOppgaveWebAPI.Models.Tag;
+
+public class HttpGetTagModel
 {
     public int Id { get; set; }
     public string Name { get; set; }
     
     public List<PostViewModel> Posts { get; set; }
-
-    public TagModel()
+    
+    public HttpGetTagModel()
     {
         Posts = new List<PostViewModel>();
     }

@@ -8,6 +8,7 @@ public class Tag
     public string Name { get; set; }
     
     public Guid UserFk { get; set; }
+    public string UserId { get; set; }
     public IdentityUser User { get; set; }
     
     public ICollection<PostTags> PostTags { get; set; }

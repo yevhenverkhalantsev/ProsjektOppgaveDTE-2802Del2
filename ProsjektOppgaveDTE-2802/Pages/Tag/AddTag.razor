@@ -1,7 +1,88 @@
-@* @page "/Tag/AddTag/{UserName:string}" *@
-<h3>AddTag</h3>
+@page "/Tag/AddTag"
+@using ProsjektOppgaveBlazor.Data.CommonModels
+@using ProsjektOppgaveBlazor.Services.JwtServices
+@using Microsoft.IdentityModel.JsonWebTokens
+@using System.Security.Claims
+@using Newtonsoft.Json
+
+@inject IJwtService JwtService
+@inject IJSRuntime JSRuntime
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Tags
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <tbody>
+                    @foreach (var tag in tags)
+                    {
+                        <tr>
+                            <td>
+                                @tag.Name
+                            </td>
+                            <td class="text-end">
+                                <input type="button" class="btn btn-outline-warning" value="Edit"/>
+                                <input type="button" class="btn btn-outline-danger" value="Delete"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="row">
+                <input type="text" class="form-control" @bind="_newTagName" style="margin-bottom: 10px"/>
+                <input type="button" class="btn btn-success" value="Add Tag" @onclick="() => OnTagCreate()" disabled="@string.IsNullOrWhiteSpace(_newTagName)"/>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
-    [Parameter] public string UserName { get; set; }
+    private TagModel[] tags = Array.Empty<TagModel>();
+    private HttpClient _httpClient = new HttpClient();
+    private string _userId = String.Empty;
+    private string _userName = String.Empty;
+    private string _newTagName = String.Empty;  
     
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync($"https://localhost:7022/api/Tag/GetAll?userName={_userName}");
+            if (response.IsSuccessStatusCode)
+            {
+                tags = await response.Content.ReadFromJsonAsync<TagModel[]>();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task OnTagCreate()
+    {
+        if (!string.IsNullOrWhiteSpace(_newTagName))
+        {
+            HttpResponseMessage responseMessage = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Tag/Create", new { Name = _newTagName, UserName = _userName });
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                string responseJson = await responseMessage.Content.ReadAsStringAsync();
+                TagModel tag = JsonConvert.DeserializeObject<TagModel>(responseJson);
+                
+                Array.Resize(ref tags, tags.Length + 1);
+                tags[tags.Length - 1] = tag;
+                
+                _newTagName = string.Empty;
+                StateHasChanged();
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+        token = token.Trim('\"');
+        var claims = JwtService.Decode(token);
+        _userId = claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+        _userName = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
+    }
 }

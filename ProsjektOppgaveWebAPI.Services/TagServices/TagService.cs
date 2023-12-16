@@ -20,7 +20,7 @@ public class TagService : ITagService
         _tagRepository = tagRepository;
     }
     
-    public async Task<ResponseService<long>> Create(CreateTagHttpPostModel vm)
+    public async Task<ResponseService<Tag>> Create(CreateTagHttpPostModel vm)
     {
         Tag dbRecord = await _tagRepository.GetAll()
             .FirstOrDefaultAsync(x=>x.Name == vm.Name && x.User.UserName == vm.UserName);
@@ -42,9 +42,17 @@ public class TagService : ITagService
         }
         catch (Exception e)
         {
-            return ResponseService<long>.Error(Errors.CANT_CREATE_TAG_ERROR);
+            return ResponseService<Tag>.Error(Errors.CANT_CREATE_TAG_ERROR);
         }
         
-        return ResponseService<long>.Ok(dbRecord.Id);
+        return ResponseService<Tag>.Ok(dbRecord);
+    }
+
+    public async Task<ICollection<Tag>> GetAll(string userName)
+    { 
+        var user = await _manager.FindByNameAsync(userName);
+        return await _tagRepository.GetAll()
+            .Where(x => x.UserId == user.Id)
+            .ToListAsync();
     }
 }

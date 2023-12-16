@@ -6,7 +6,9 @@ namespace ProsjektOppgaveWebAPI.Services.TagServices;
 
 public interface ITagService
 {
-    Task<ResponseService<long>> Create(CreateTagHttpPostModel vm);
+    Task<ResponseService<Tag>> Create(CreateTagHttpPostModel vm);
+    
+    Task<ICollection<Tag>> GetAll(string userName);
     
     
 }

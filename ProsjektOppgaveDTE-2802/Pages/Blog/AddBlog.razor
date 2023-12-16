@@ -1,7 +1,10 @@
 ﻿@page "/Blog/Create"
 
 @using ProsjektOppgaveBlazor.Data.CommonModels;
+@using ProsjektOppgaveBlazor.Services.JwtServices
 @inject IJSRuntime JSRuntime
+
+@inject IJwtService JwtService
 
 <h3>Create Blog</h3>
 
@@ -50,6 +53,7 @@
             IsOpen = _blogModel.IsOpen
         });
         
+        var claims = JwtService.Decode(token);
         return response.IsSuccessStatusCode ? "Success" : "Failed";
     }
 

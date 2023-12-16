@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using ProsjektOppgaveWebAPI.Database.Entities;
-using ProsjektOppgaveWebAPI.EntityFramework.Repository;
 using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Models.Blog;
 using ProsjektOppgaveWebAPI.Models.Comment;
@@ -88,6 +87,12 @@ public class BlogController : ControllerBase
        {
            return BadRequest(new { responseMessage = response.ErrorMessage });
        }
+
+       await _hubContext.Clients.All.SendAsync("CreateBlogHandler", JsonConvert.SerializeObject(response.Value,
+           new JsonSerializerSettings()
+           {
+               ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+           }));
 
        return Ok();
     }

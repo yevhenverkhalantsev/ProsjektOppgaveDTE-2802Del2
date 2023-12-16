@@ -8,7 +8,7 @@
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h6 class="mb-0">Blogs</h6>
             
-            <input type="text" class="form-control" placeholder="Search" style="max-width: 500px" @onchange="SearchHandler">
+            <input type="text" class="form-control" placeholder="Search and press Enter" style="max-width: 500px" @onchange="SearchHandler">
             
         </div>
         
@@ -51,6 +51,20 @@
         
     protected override async Task OnInitializedAsync()
     {
+        HubConnection hubConnectionBlogCreate = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/blog/create")
+            .Build();
+        
+        await hubConnectionBlogCreate.StartAsync();
+        hubConnectionBlogCreate.On<BlogModel>("CreateBlogHandler", async (blog) =>
+        {
+            Array.Resize(ref _blogs, _blogs.Length + 1);
+            _blogs[_blogs.Length - 1] = blog;
+            
+            await InvokeAsync(StateHasChanged);
+        });
+        
+        
        HubConnection hubConnectionBlogDelete = new HubConnectionBuilder()
             .WithUrl("https://localhost:7022/api/blog/delete")
             .Build();
@@ -96,7 +110,17 @@
 
     private async Task SearchHandler(ChangeEventArgs e)
     {
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"https://localhost:7022/api/Blog/Search?searchQuery={e.Value.ToString()}");
+        var searchQuery = e.Value.ToString();
+        HttpResponseMessage responseMessage;
+
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            responseMessage = await _httpClient.GetAsync("https://localhost:7022/blogs");
+        }
+        else
+        {
+            responseMessage = await _httpClient.GetAsync($"https://localhost:7022/api/Blog/Search?searchQuery={searchQuery}");
+        }
 
         if (responseMessage.IsSuccessStatusCode)
         {
@@ -105,5 +129,6 @@
             await InvokeAsync(StateHasChanged);
         }
     }
+
 
 }

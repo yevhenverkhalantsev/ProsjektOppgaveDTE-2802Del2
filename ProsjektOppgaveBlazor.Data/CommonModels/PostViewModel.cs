@@ -9,9 +9,12 @@ public class PostViewModel
     public int BlogId { get; set; }
     
     public List<CommentViewModel> Comments { get; set; }
+    
+    public List<TagModel> Tags { get; set; }
 
     public PostViewModel()
     {
         Comments = new List<CommentViewModel>();
+        Tags = new List<TagModel>();
     }
 }

@@ -13,7 +13,7 @@ public interface IBlogService
     
     Task<ICollection<Blog>> GetAllBlogsByUserId(string userId);
     
-    Task<ResponseService<long>> Save(CreateBlogHttpPostModel vm, IPrincipal principal);
+    Task<ResponseService<Blog>> Save(CreateBlogHttpPostModel vm, IPrincipal principal);
      
     Task<ResponseService<bool>> Delete(int id);
     
