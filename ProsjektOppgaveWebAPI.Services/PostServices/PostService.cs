@@ -1,4 +1,3 @@
-using System.Security.Principal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProsjektOppgaveWebAPI.Common;
@@ -6,6 +5,7 @@ using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.EntityFramework;
 using ProsjektOppgaveWebAPI.EntityFramework.Repository;
 using ProsjektOppgaveWebAPI.Services.PostServices.Models;
+using ProsjektOppgaveWebAPI.Services.PostTagsService;
 using ProsjektOppgaveWebAPI.Services.Response;
 
 namespace ProsjektOppgaveWebAPI.Services.PostServices;
@@ -13,14 +13,12 @@ namespace ProsjektOppgaveWebAPI.Services.PostServices;
 public class PostService: IPostService
 {
     private readonly IGenericRepository<Post> _postRepository;
-    private readonly UserManager<IdentityUser> _manager;
-    private readonly BlogDbContext _db;
+    private readonly IPostTagsService _postTagsService;
 
-    public PostService(IGenericRepository<Post> repository, UserManager<IdentityUser> manager, BlogDbContext db)
+    public PostService(IGenericRepository<Post> repository, IPostTagsService postTagsService)
     {
         _postRepository = repository;
-        _manager = manager;
-        _db = db;
+        _postTagsService = postTagsService;
     }
     
     public async Task<ResponseService<Post>> GetPost(int id)
@@ -66,6 +64,16 @@ public class PostService: IPostService
             throw new Exception(Errors.CANT_CREATE_POST_ERROR);
         }
 
+        foreach (int id in vm.TagIds)
+        {
+            var response = await _postTagsService.Create(post.PostId, id);
+
+            if (response.IsError)
+            {
+                return ResponseService<int>.Error(response.ErrorMessage);
+            }
+        }
+        
         return ResponseService<int>.Ok(post.PostId);
     }
 

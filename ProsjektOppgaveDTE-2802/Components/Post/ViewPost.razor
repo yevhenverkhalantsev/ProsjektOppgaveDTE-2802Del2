@@ -13,8 +13,13 @@
                     <div class="card-header">
                         <div class="row">
                             <h5 class="col-md" style="color: black">
-                                @Post.Title
+                                @Post.Title 
+                                @if (Post.Tags.Any())
+                                {
+                                    @: #: @(string.Join(" | ", Post.Tags.Select(t => t.Name)))
+                                }
                             </h5>
+
                         </div>
 
                     </div>
@@ -42,9 +47,9 @@
                                     </CascadingValue>
                                 }
 
-                                    <div class="input-group mb-3">
+                                    <div class="d-flex justify-content-between">
                                         <input type="text" class="form-control" placeholder="Write a comment..." id="comment-input" @bind="_commentModel.Text">
-                                        <button class="btn btn-outline-secondary" type="button" @onclick="CreateNewCommentHandler">Comment</button>
+                                        <button class="btn btn-outline-secondary" @onclick="CreateNewCommentHandler">Comment</button>
                                     </div>
                             </div>
                         </div>

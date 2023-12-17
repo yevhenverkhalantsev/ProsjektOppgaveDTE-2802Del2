@@ -7,6 +7,7 @@ using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Models.Blog;
 using ProsjektOppgaveWebAPI.Models.Comment;
 using ProsjektOppgaveWebAPI.Models.Post;
+using ProsjektOppgaveWebAPI.Models.Tag;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.BlogServices.Models;
 
@@ -61,6 +62,12 @@ public class BlogController : ControllerBase
                     CommentId = c.CommentId,
                     Text = c.Text,
                     PostId = c.PostId
+                }).ToList(),
+                Tags = x.PostTags.Select(t => new TagViewModel()
+                {
+                    Id = t.Tag.Id,
+                    Name = t.Tag.Name,
+                    PostId = t.PostFk
                 }).ToList()
 
             }).ToList()

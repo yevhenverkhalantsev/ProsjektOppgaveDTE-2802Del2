@@ -1,0 +1,21 @@
+@using ProsjektOppgaveBlazor.Data.CommonModels
+@using ProsjektOppgaveBlazor.Components.Post
+
+<div style="border-radius: 5px; margin: 10px">
+    @foreach (var tag in Tags)
+    {
+        <div style="background-color: #d1e7dd; margin: 2px" @onclick="() => UnselectTag(tag)" >
+            @tag.Name
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<TagViewModel> Tags { get; set; }
+    [CascadingParameter] public CreatePostModal ParentComponent { get; set; }
+    
+    private void UnselectTag(TagViewModel tag)
+    {
+        ParentComponent.UnselectTag(tag);
+    }
+}

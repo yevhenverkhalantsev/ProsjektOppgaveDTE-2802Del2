@@ -35,6 +35,9 @@ public class BlogService : IBlogService
             .Where(x => x.BlogId == id)
             .Include(x => x.Posts)
             .ThenInclude(x => x.Comments)
+            .Include(x=> x.Posts)
+            .ThenInclude(x=>x.PostTags)
+            .ThenInclude(x=>x.Tag)
             .FirstOrDefaultAsync();
         
         if (blog == null)

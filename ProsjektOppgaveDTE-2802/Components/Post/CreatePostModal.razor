@@ -1,8 +1,16 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using System.Net.Http.Headers
+@using System.Security.Claims
 @using Microsoft.AspNetCore.SignalR.Client
+@using Newtonsoft.Json
 @using ProsjektOppgaveBlazor.Pages.Blog
+@using ProsjektOppgaveBlazor.Components.Tag
+@using ProsjektOppgaveBlazor.Services.JwtServices
+
 @inject IJSRuntime JsRuntime
+@inject IJwtService JwtService
+
+
 
 <input type="button" class="btn btn-outline-dark float-end" value="add post" @onclick="() => _modalDialog.Open()"/>
 <ModalDialog Title="Create new post" @ref="_modalDialog">
@@ -17,6 +25,13 @@
                         <label class="form-label">Content</label>
                         <input type="text" class="form-control" id="post-content" @bind="_postModel.Content">
                     </div>
+                               <div class="mb-3">
+                                   <label class="form-label">Tags</label>
+                                   <CascadingValue Value="this">
+                                       <NotSelectedTags Tags="_enableTags.ToList()"/>
+                                       <SelectedTags Tags="_selectedTags"/>
+                                   </CascadingValue>
+                                        </div>
     
                 </div>
                 <div class="modal-footer">
@@ -44,6 +59,9 @@
     private PostModel _postModel = new PostModel();
     private HttpClient _httpClient = new HttpClient();
     private ElementReference _hideModalBtn = new ElementReference();
+    private List<TagViewModel> _enableTags = new List<TagViewModel>();
+    private List<TagViewModel> _selectedTags = new List<TagViewModel>();
+    private string _userName = String.Empty;
     
     private async Task CreateNewPostHandler(MouseEventArgs e)
     {
@@ -52,7 +70,13 @@
             _postModel.BlogId = BlogId;
             
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken"));
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/post/create", _postModel);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/post/create", new
+            {
+                Title = _postModel.Title,
+                Content = _postModel.Content,
+                BlogId = _postModel.BlogId,
+                TagIds = _selectedTags.Select(x => x.Id).ToList()
+            });
             if (response.IsSuccessStatusCode)
             {
                 _modalDialog.Close();
@@ -61,4 +85,35 @@
             }
         }
     }
+
+    public void SelectTag(TagViewModel tagViewModel)
+    {
+        _enableTags.Remove(tagViewModel);
+        _selectedTags.Add(tagViewModel);
+        StateHasChanged();
+    }
+    
+    public void UnselectTag(TagViewModel tagViewModel)
+    {
+        _selectedTags.Remove(tagViewModel);
+        _enableTags.Add(tagViewModel);
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+        token = token.Trim('\"');
+        var claims = JwtService.Decode(token);
+        _userName = claims.FirstOrDefault(x=> x.Type == ClaimTypes.Name).Value;
+        
+        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"https://localhost:7022/api/tag/getall?userName={_userName}");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            string jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+            _enableTags = JsonConvert.DeserializeObject<List<TagViewModel>>(jsonResponse);
+            StateHasChanged();
+        }
+    }
+
 }

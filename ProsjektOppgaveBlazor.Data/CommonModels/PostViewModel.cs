@@ -10,11 +10,11 @@ public class PostViewModel
     
     public List<CommentViewModel> Comments { get; set; }
     
-    public List<TagModel> Tags { get; set; }
+    public List<TagViewModel> Tags { get; set; }
 
     public PostViewModel()
     {
         Comments = new List<CommentViewModel>();
-        Tags = new List<TagModel>();
+        Tags = new List<TagViewModel>();
     }
 }

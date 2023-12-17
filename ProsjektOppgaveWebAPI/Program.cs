@@ -11,6 +11,7 @@ using ProsjektOppgaveWebAPI.Services.CommentServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices.Models;
 using ProsjektOppgaveWebAPI.Services.PostServices;
+using ProsjektOppgaveWebAPI.Services.PostTagsService;
 using ProsjektOppgaveWebAPI.Services.TagServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,6 +69,7 @@ services.AddTransient<IBlogService, BlogService>();
 services.AddTransient<ICommentService, CommentService>();
 services.AddTransient<ITagService, TagService>();
 services.AddTransient<IPostService, PostService>();
+services.AddTransient<IPostTagsService, PostTagsService>();
 
 var app = builder.Build();
 

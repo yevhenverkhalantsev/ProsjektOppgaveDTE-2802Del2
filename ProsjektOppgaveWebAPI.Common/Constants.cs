@@ -23,4 +23,6 @@ public static class Errors
     public const string CANT_CREATE_TAG_ERROR = "Can't create tag";
     public const string TAG_NOT_FOUND_ERROR = "Tag not found";
     public const string CANT_DELETE_TAG_ERROR = "Can't delete tag";
+    public const string TAG_ALREADY_CONNECTED_TO_POST_ERROR = "Tag already connected to post";
+    public const string CANT_CONNECT_TAG_TO_POST_ERROR = "Can't connect tag to post";
 }
