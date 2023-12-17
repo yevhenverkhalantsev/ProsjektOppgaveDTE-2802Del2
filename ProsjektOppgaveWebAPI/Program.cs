@@ -98,4 +98,6 @@ app.MapHub<PostHub>("/api/Post/Delete");
 app.MapHub<BlogHub>("/api/Blog/Create");
 app.MapHub<BlogHub>("/api/Blog/Delete");
 
+app.MapHub<TagHub>("api/Tag/Delete");
+
 app.Run();

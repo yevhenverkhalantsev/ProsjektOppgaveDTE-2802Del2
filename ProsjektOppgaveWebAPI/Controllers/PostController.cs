@@ -15,13 +15,11 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 [ApiController]
 public class PostController : ControllerBase
 {
-    private readonly IBlogService _blogService;
     private readonly IPostService _postService;
     private readonly IHubContext<PostHub> _hubContext;
 
-    public PostController(IBlogService blogService, IPostService postService, IHubContext<PostHub> hubContext)
+    public PostController(IPostService postService, IHubContext<PostHub> hubContext)
     {
-        _blogService = blogService;
         _postService = postService;
         _hubContext = hubContext;
     }

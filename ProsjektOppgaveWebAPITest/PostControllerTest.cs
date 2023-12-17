@@ -11,15 +11,13 @@ namespace ProsjektOppgaveWebAPITest;
 
 public class PostControllerTest
 {
-    private readonly Mock<IBlogService> _blogServiceMock;
     private readonly Mock<IPostService> _postServiceMock;
     private readonly PostController _controller;
 
     public PostControllerTest()
     {
-        _blogServiceMock = new Mock<IBlogService>();
         _postServiceMock = new Mock<IPostService>();
-        _controller = new PostController(_blogServiceMock.Object, _postServiceMock.Object, null);
+        _controller = new PostController( _postServiceMock.Object, null);
     }
 
     [Fact]

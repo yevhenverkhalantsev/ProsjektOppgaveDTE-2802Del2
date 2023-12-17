@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Models.Post;
 using ProsjektOppgaveWebAPI.Models.Tag;
-using ProsjektOppgaveWebAPI.Services.Response;
 using ProsjektOppgaveWebAPI.Services.TagServices;
 using ProsjektOppgaveWebAPI.Services.TagServices.Models;
 
@@ -12,10 +13,12 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 public class TagController : ControllerBase
 {
     private readonly ITagService _service;
+    private readonly IHubContext<TagHub> _hubContext;
 
-    public TagController(ITagService service)
+    public TagController(ITagService service, IHubContext<TagHub> hubContext)
     {
         _service = service;
+        _hubContext = hubContext;
     }
 
 
@@ -53,5 +56,23 @@ public class TagController : ControllerBase
             Name = x.Name,
             Posts = new List<PostViewModel>()
         }));
+    }
+
+    [HttpDelete]
+    [Route("[action]/{tagId:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int tagId)
+    {
+        var response = await _service.DeleteTag(tagId);
+        if (response.IsError)
+        {
+            return BadRequest(new
+            {
+                responseMessage = response.ErrorMessage
+            });
+        }
+
+        await _hubContext.Clients.All.SendAsync("DeleteTagNotify", tagId);
+        
+        return Ok();
     }
 }

@@ -55,4 +55,26 @@ public class TagService : ITagService
             .Where(x => x.UserId == user.Id)
             .ToListAsync();
     }
+
+    public async Task<ResponseService<bool>> DeleteTag(int tagId)
+    {
+        Tag tag = await _tagRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Id == tagId);
+
+        if (tag == null)
+        {
+            throw new Exception(Errors.TAG_NOT_FOUND_ERROR);
+        }
+        
+        try
+        {
+            _tagRepository.Delete(tag);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(Errors.CANT_DELETE_TAG_ERROR, e);
+        }
+        
+        return ResponseService<bool>.Ok(true);
+    }
 }

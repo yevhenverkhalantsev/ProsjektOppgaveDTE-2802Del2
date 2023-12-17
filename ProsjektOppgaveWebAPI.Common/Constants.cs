@@ -21,4 +21,6 @@ public static class Errors
     public const string CANT_UPDATE_COMMENT_ERROR = "Can't update comment";
     public const string TAG_ALREADY_EXISTS = "Tag already exists";
     public const string CANT_CREATE_TAG_ERROR = "Can't create tag";
+    public const string TAG_NOT_FOUND_ERROR = "Tag not found";
+    public const string CANT_DELETE_TAG_ERROR = "Can't delete tag";
 }

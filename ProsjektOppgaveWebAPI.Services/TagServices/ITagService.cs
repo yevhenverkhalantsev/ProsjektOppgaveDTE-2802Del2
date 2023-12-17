@@ -10,5 +10,5 @@ public interface ITagService
     
     Task<ICollection<Tag>> GetAll(string userName);
     
-    
+    Task<ResponseService<bool>> DeleteTag(int tagId);
 }

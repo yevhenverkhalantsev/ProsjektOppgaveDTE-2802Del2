@@ -4,6 +4,8 @@
 @using Microsoft.IdentityModel.JsonWebTokens
 @using System.Security.Claims
 @using Newtonsoft.Json
+@using System.Net.Http.Headers
+@using Microsoft.AspNetCore.SignalR.Client
 
 @inject IJwtService JwtService
 @inject IJSRuntime JSRuntime
@@ -16,15 +18,14 @@
         <div class="card-body">
             <table class="table table-hover">
                 <tbody>
-                    @foreach (var tag in tags)
+                    @foreach (var tag in _tags)
                     {
                         <tr>
                             <td>
                                 @tag.Name
                             </td>
                             <td class="text-end">
-                                <input type="button" class="btn btn-outline-warning" value="Edit"/>
-                                <input type="button" class="btn btn-outline-danger" value="Delete"/>
+                                <input type="button" class="btn btn-outline-danger" value="Delete" @onclick="() =>  DeleteTagHandler(tag.Id)"/>
                             </td>
                         </tr>
                     }
@@ -39,7 +40,7 @@
 </div>
 
 @code {
-    private TagModel[] tags = Array.Empty<TagModel>();
+    private TagModel[] _tags = Array.Empty<TagModel>();
     private HttpClient _httpClient = new HttpClient();
     private string _userId = String.Empty;
     private string _userName = String.Empty;
@@ -52,7 +53,7 @@
             HttpResponseMessage response = await _httpClient.GetAsync($"https://localhost:7022/api/Tag/GetAll?userName={_userName}");
             if (response.IsSuccessStatusCode)
             {
-                tags = await response.Content.ReadFromJsonAsync<TagModel[]>();
+                _tags = await response.Content.ReadFromJsonAsync<TagModel[]>();
                 StateHasChanged();
             }
         }
@@ -68,8 +69,8 @@
                 string responseJson = await responseMessage.Content.ReadAsStringAsync();
                 TagModel tag = JsonConvert.DeserializeObject<TagModel>(responseJson);
                 
-                Array.Resize(ref tags, tags.Length + 1);
-                tags[tags.Length - 1] = tag;
+                Array.Resize(ref _tags, _tags.Length + 1);
+                _tags[_tags.Length - 1] = tag;
                 
                 _newTagName = string.Empty;
                 StateHasChanged();
@@ -84,5 +85,32 @@
         var claims = JwtService.Decode(token);
         _userId = claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
         _userName = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
+        
+        HubConnection hubConnectionTagDelete = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7022/api/Tag/Delete")
+            .Build();
+        
+        await hubConnectionTagDelete.StartAsync();
+        hubConnectionTagDelete.On<int>("DeleteTagNotify", async (id) =>
+        {
+            TagModel[] temp = new TagModel[_tags.Length - 1];
+            for (int i = 0, j = 0; i < _tags.Length; i++)
+            {
+                if (_tags[i].Id != id)
+                {
+                    temp[j] = _tags[i];
+                    j++;
+                }
+            }
+
+            _tags = temp;
+
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+    
+    private async Task DeleteTagHandler(int id)
+    {
+        HttpResponseMessage responseMessage = await _httpClient.DeleteAsync($"https://localhost:7022/api/Tag/Delete/{id}");
     }
 }
