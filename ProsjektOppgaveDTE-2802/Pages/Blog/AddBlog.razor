@@ -24,7 +24,7 @@
                                     <input class="form-check-input" type="checkbox" @bind="_blogModel.IsOpen"/>
                                 </div>
                                 <button class="btn btn-primary" @onclick="() => Save()">Save</button>
-                                @* <p style="margin-top: 5px" @_alertClass>@_alertMessage</p> *@
+                                <div style="margin-top: 5px" class="@_alertClass">@_alertMessage</div>
                             </div>
                     </div>
                 </div>
@@ -38,11 +38,11 @@
     private BlogModel _blogModel = new BlogModel();
     private HttpClient _httpClient = new HttpClient();
     private string _username = string.Empty;
-    // private string _alertMessage = string.Empty;
-    // private string _alertClass = string.Empty;
+    private string _alertMessage = string.Empty;
+    private string _alertClass = string.Empty;
 
 
-    private async Task<string> Save()
+    private async Task Save()
     {
         string token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
         token = token.Trim('"');
@@ -58,21 +58,15 @@
         
         var claims = JwtService.Decode(token);
         if (response.IsSuccessStatusCode){
-            return "Blog created";
+            _alertMessage = "Blog created";
+            _alertClass = "alert alert-success";
         }
-        else{
-            return "Blog not created";
+        else
+        {
+            _alertMessage = "Blog not created";
+            _alertClass = "alert alert-danger";
         }
-        // {
-        //     _alertMessage = "Blog created";
-        //     _alertClass = "alert alert-success";
-        // }
-        // else
-        // {
-        //     _alertMessage = "Blog not created";
-        //     _alertClass = "alert alert-danger";
-        // }
-        // return _alertMessage;
+        StateHasChanged();
     }
 
 }

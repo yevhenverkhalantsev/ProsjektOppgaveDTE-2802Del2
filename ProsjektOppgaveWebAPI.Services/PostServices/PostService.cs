@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProsjektOppgaveWebAPI.Common;
 using ProsjektOppgaveWebAPI.Database.Entities;
-using ProsjektOppgaveWebAPI.EntityFramework;
 using ProsjektOppgaveWebAPI.EntityFramework.Repository;
 using ProsjektOppgaveWebAPI.Services.PostServices.Models;
 using ProsjektOppgaveWebAPI.Services.PostTagsService;
@@ -103,6 +101,8 @@ public class PostService: IPostService
     {
         Post post = await _postRepository.GetAll()
             .Include(x => x.Comments)
+            .Include(x => x.PostTags)
+            .ThenInclude(x => x.Tag)
             .FirstOrDefaultAsync(x => x.PostId == vm.PostId);
         
         if (post == null)
@@ -120,6 +120,21 @@ public class PostService: IPostService
         catch (Exception e)
         {
             return ResponseService<Post>.Error(Errors.CANT_UPDATE_POST_ERROR);
+        }
+
+        foreach (int id in post.PostTags.Select(x => x.TagFk).Except(vm.TagIds))
+        {
+            var response = await _postTagsService.Delete(post.PostId, id);
+
+            if (response.IsError)
+            {
+                return ResponseService<Post>.Error(response.ErrorMessage);
+            }
+        }
+        
+        foreach (int id in vm.TagIds)
+        {
+            var response = await _postTagsService.Create(post.PostId, id);
         }
         
         return ResponseService<Post>.Ok(post);

@@ -12,7 +12,7 @@
 
 @code {
     [Parameter] public List<TagViewModel> Tags { get; set; }
-    [CascadingParameter] public CreatePostModal ParentComponent { get; set; }
+    [CascadingParameter] public PostModalBase ParentComponent { get; set; }
 
     private void SelectTag(TagViewModel tag)
     {

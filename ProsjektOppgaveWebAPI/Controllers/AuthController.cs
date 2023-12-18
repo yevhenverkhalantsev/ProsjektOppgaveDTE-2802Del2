@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
         _userManager = userManager;
         _configuration = configuration;
     }
-    
+
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginViewModel model)

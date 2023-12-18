@@ -50,6 +50,7 @@ public class BlogController : ControllerBase
 
         BlogViewModel vm = new BlogViewModel()
         {
+            IsOpen = response.Value.IsOpen,
             Title = response.Value.Name,
             Posts = response.Value.Posts.Select(x => new PostViewModel()
             {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Models.Comment;
@@ -77,14 +78,17 @@ public class PostController : ControllerBase
                 responseMesage = response.ErrorMessage
             });
         }
-        await _hubContext.Clients.All.SendAsync("UpdatePostNotify", new
+        await _hubContext.Clients.All.SendAsync("UpdatePostNotify", JsonConvert.SerializeObject(new
         {
             PostId = vm.PostId,
             Title = vm.Title,
             Content = vm.Content,
             BlogId = response.Value.BlogId,
             Comments = response.Value.Comments
-        });
+        }, new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        }));
 
         return Ok();
     }

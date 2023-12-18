@@ -47,18 +47,23 @@
                                     </CascadingValue>
                                 }
 
+                                @if (ParentComponent._blogModel.IsOpen)
+                                {
                                 <CascadingValue Value="this">
                                     <CreateComment Post="Post"/>
                                 </CascadingValue>
+                                }
 
                             </div>
                         </div>
                         
                     </div>
-                    
+                    @if (ParentComponent._blogModel.IsOpen)
+                    {
                     <CascadingValue Value="this">
                         <BtnEditDeletePost Post="Post"/>
                     </CascadingValue>
+                    }
                     
                 </div>
                 <br />

@@ -16,7 +16,11 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 builder.Services.AddTransient<IJwtService, JwtService>();
 
-builder.Services.AddHttpClient("BlogHttpClient", client => client.BaseAddress = new Uri("https://localhost:7115"));
+builder.Services.AddHttpClient("BlogHttpClient", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7115");
+    client.Timeout = TimeSpan.FromMinutes(1);
+});
 
 var app = builder.Build();
 

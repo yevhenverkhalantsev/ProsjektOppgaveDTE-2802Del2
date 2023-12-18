@@ -2,6 +2,11 @@
 @using ProsjektOppgaveBlazor.Data.CommonModels
 @using Newtonsoft.Json
 @using Microsoft.AspNetCore.SignalR.Client
+@using ProsjektOppgaveBlazor.Services.JwtServices
+@using System.Security.Claims
+
+@inject IJSRuntime JSRuntime
+@inject IJwtService JwtService
 
 <div class="container-fluid pt-4 px-4">
     <div class="bg-secondary text-center rounded p-4">
@@ -32,7 +37,12 @@
                         <td>@t.Owner.UserName</td>
                         <td>@t.Name</td>
                         <td><a class="btn btn-primary" href="/blogs/view/@t.BlogId">More info</a></td>
-                        <td><input type="button" class="btn btn-danger" value="Delete" @onclick="()=> DeleteBlogHandler(t.BlogId)"/></td>
+                        <td>
+                            @if (t.Owner.UserName == _userName)
+                            {
+                                <input type="button" class="btn btn-danger" value="Delete" @onclick="()=> DeleteBlogHandler(t.BlogId)"/>
+                            }
+                        </td>
                     </tr>
                 }
 
@@ -48,9 +58,15 @@
     
     private HttpClient _httpClient = new HttpClient();
     private BlogModel[] _blogs = new BlogModel[0];
+    private string _userName = "";
         
     protected override async Task OnInitializedAsync()
     {
+        string token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+        token = token.Trim('"');
+        var claims = JwtService.Decode(token);
+        _userName = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
+        
         HubConnection hubConnectionBlogCreate = new HubConnectionBuilder()
             .WithUrl("https://localhost:7022/api/blog/create")
             .Build();
@@ -91,6 +107,7 @@
     {
         if (firstRender)
         {
+            _httpClient.Timeout = TimeSpan.FromMinutes(1);
            HttpResponseMessage responseMessage = await _httpClient.GetAsync("https://localhost:7022/blogs");
               if (responseMessage.IsSuccessStatusCode)
               {

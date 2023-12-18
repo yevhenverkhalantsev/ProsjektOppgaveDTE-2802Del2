@@ -9,9 +9,13 @@
     <div class="card">
         <div class="card-header">
             <h5 class="card-title" style="color: black">@_blogModel.Title</h5>
+            
+            @if (_blogModel.IsOpen)
+            {
             <CascadingValue Value="this">
                 <CreatePostModal BlogId="Id"/>
             </CascadingValue>
+            }
             
         </div>
     </div>
@@ -37,7 +41,7 @@
     public int Id { get; set; }
     
     private HttpClient _httpClient = new HttpClient();
-    private BlogViewModel _blogModel = new BlogViewModel();
+    public BlogViewModel _blogModel = new BlogViewModel();
     private EditCommentModal _editCommentModal;
     private EditPostModal _editPostModal;
     
@@ -95,9 +99,9 @@
         _editCommentModal.OpenCommentModal(comment);
     }
     
-    public void OpenEditPostModal(PostViewModel post)
+    public async Task OpenEditPostModal(PostViewModel post)
     {
-        _editPostModal.OpenModal(post);
+        await _editPostModal.OpenModal(post);
     }
     
     
