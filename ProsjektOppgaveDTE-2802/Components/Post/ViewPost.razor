@@ -26,7 +26,7 @@
                     
                     <div class="card-body">
                         <p>
-                           @Post.Content
+                            @Post.Content
                         </p>
                         
                         <br/>
@@ -47,18 +47,19 @@
                                     </CascadingValue>
                                 }
 
-                                    <div class="d-flex justify-content-between">
-                                        <input type="text" class="form-control" placeholder="Write a comment..." id="comment-input" @bind="_commentModel.Text">
-                                        <button class="btn btn-outline-secondary" @onclick="CreateNewCommentHandler">Comment</button>
-                                    </div>
+                                <CascadingValue Value="this">
+                                    <CreateComment Post="Post"/>
+                                </CascadingValue>
+
                             </div>
                         </div>
                         
                     </div>
-                        <div class="card-footer">
-                            <input type="button" class="btn btn-warning" value="Edit" @onclick="OnUpdatePostHandler"/>
-                            <input type="button" class="btn btn-danger" value="Delete" @onclick="DeletePostHandler"/>
-                        </div>
+                    
+                    <CascadingValue Value="this">
+                        <BtnEditDeletePost Post="Post"/>
+                    </CascadingValue>
+                    
                 </div>
                 <br />
             </div>
@@ -136,46 +137,7 @@
             }
         });
     }
-
-    private async Task DeletePostHandler(MouseEventArgs e)
-    {
-        if (e.Button == 0)
-        {
-            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Post/Delete/{Post.PostId}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                await response.Content.ReadFromJsonAsync<bool>();
-            }
-        }
-    }
     
-    private async Task CreateNewCommentHandler(MouseEventArgs e)
-    {
-        if (e.Button == 0)
-        {
-            _commentModel.PostId = Post.PostId;
-            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Comment/Create", _commentModel);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var createdCommentId = await response.Content.ReadFromJsonAsync<int>();
-            }
-        }
-    }
-    
-    private async Task OnUpdatePostHandler(MouseEventArgs e)
-    {
-        if (e.Button == 0)
-        {
-            ParentComponent.OpenEditPostModal(Post);
-        }
-    }
-
     public void OpenEditCommentModal(CommentViewModel commentViewModel)
     {
         ParentComponent.OpenEditCommentModal(commentViewModel);

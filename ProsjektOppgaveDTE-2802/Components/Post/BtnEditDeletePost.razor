@@ -1,0 +1,44 @@
+@using System.Net.Http.Headers
+@using ProsjektOppgaveBlazor.Data.CommonModels
+@using ProsjektOppgaveBlazor.Pages.Blog
+
+@inject IJSRuntime JsRuntime
+  
+
+<div class="card-footer">
+    <input type="button" class="btn btn-warning" value="Edit" @onclick="OnUpdatePostHandler"/>
+    <input type="button" class="btn btn-danger" value="Delete" @onclick="DeletePostHandler"/>
+</div>
+         
+@code {
+    [CascadingParameter] public ViewPost Parent { get; set; }
+    [CascadingParameter] public View ParentComponent { get; set; }
+    [Parameter] public PostViewModel Post { get; set; }
+    
+    private HttpClient _httpClient = new HttpClient();
+    
+    private async Task DeletePostHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            token = token.Trim('\"');
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"https://localhost:7022/api/Post/Delete/{Post.PostId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                await response.Content.ReadFromJsonAsync<bool>();
+            }
+        }
+    }
+    
+    private async Task OnUpdatePostHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            ParentComponent.OpenEditPostModal(Post);
+        }
+    }
+    
+}

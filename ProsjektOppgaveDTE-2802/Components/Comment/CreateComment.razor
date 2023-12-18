@@ -1,0 +1,37 @@
+@using ProsjektOppgaveBlazor.Data.CommonModels
+@using System.Net.Http.Headers
+@using ProsjektOppgaveBlazor.Components.Post
+
+@inject IJSRuntime JsRuntime
+
+
+<div class="d-flex justify-content-between">
+    <input type="text" class="form-control" placeholder="Write a comment..." @bind="_commentModel.Text">
+    <button class="btn btn-outline-secondary" @onclick="CreateNewCommentHandler">Comment</button>
+</div>
+
+
+@code {
+    [CascadingParameter] public ViewPost ParentComponent { get; set; }
+    [Parameter] public PostViewModel Post { get; set; }
+    
+    private CommentModel _commentModel = new CommentModel();
+    HttpClient _httpClient = new HttpClient();
+    
+    private async Task CreateNewCommentHandler(MouseEventArgs e)
+    {
+        if (e.Button == 0)
+        {
+            _commentModel.PostId = Post.PostId;
+            string token = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Comment/Create", _commentModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _commentModel.Text = "";
+                // var createdCommentId = await response.Content.ReadFromJsonAsync<int>();
+            }
+        }
+    }
+}
