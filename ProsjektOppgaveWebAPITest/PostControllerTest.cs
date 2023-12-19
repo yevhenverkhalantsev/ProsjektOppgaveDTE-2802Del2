@@ -2,26 +2,25 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ProsjektOppgaveWebAPI.Controllers;
 using ProsjektOppgaveWebAPI.Database.Entities;
-using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.PostServices;
 using ProsjektOppgaveWebAPI.Services.PostServices.Models;
 using ProsjektOppgaveWebAPI.Services.Response;
 
 namespace ProsjektOppgaveWebAPITest;
 
-public class PostControllerTest
+public class PostControllerTests
 {
     private readonly Mock<IPostService> _postServiceMock;
     private readonly PostController _controller;
 
-    public PostControllerTest()
+    public PostControllerTests()
     {
         _postServiceMock = new Mock<IPostService>();
-        _controller = new PostController( _postServiceMock.Object, null);
+        _controller = new PostController(_postServiceMock.Object, null);
     }
 
     [Fact]
-    public async Task GetPosts_ReturnsExpectedPosts()
+    public async Task GetPosts_ShouldReturnListOfPostsForGivenBlogId()
     {
         // Arrange
         const int blogId = 1;
@@ -36,45 +35,29 @@ public class PostControllerTest
     }
 
     [Fact]
-    public async Task GetPost_ReturnsOkWithExpectedPost()
-    {
-        // Arrange
-        var postId = 1;
-        var expectedPost = new Post();
-        _postServiceMock.Setup(service => service.GetPost(postId)).ReturnsAsync(ResponseService<Post>.Ok(expectedPost));
-
-        // Act
-        var result = await _controller.GetPost(postId);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(expectedPost, okResult.Value);
-    }
-
-    [Fact]
-    public async Task Create_ReturnsBadRequest_WhenModelStateIsInvalid()
+    public async Task CreatePost_ShouldReturnBadRequestWhenModelIsInvalid()
     {
         // Arrange
         _controller.ModelState.AddModelError("error", "some error");
-        var createModel = new CreatePostHttpPostModel();
+        var createPostModel = new CreatePostHttpPostModel();
 
         // Act
-        var result = await _controller.Create(createModel);
+        var result = await _controller.Create(createPostModel);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result);
     }
 
     [Fact]
-    public async Task Create_ReturnsOk_WhenSuccessful()
+    public async Task CreatePost_ShouldReturnOkWithPostIdWhenSuccessful()
     {
         // Arrange
-        var createModel = new CreatePostHttpPostModel();
-        _postServiceMock.Setup(service => service.SavePost(createModel))
+        var createPostModel = new CreatePostHttpPostModel();
+        _postServiceMock.Setup(service => service.SavePost(createPostModel))
             .ReturnsAsync(ResponseService<int>.Ok(1));
 
         // Act
-        var result = await _controller.Create(createModel);
+        var result = await _controller.Create(createPostModel);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);

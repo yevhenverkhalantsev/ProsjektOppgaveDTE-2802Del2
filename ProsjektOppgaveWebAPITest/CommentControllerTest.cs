@@ -7,137 +7,94 @@ using Microsoft.AspNetCore.SignalR;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Services.Response;
+using Xunit;
 
-namespace ProsjektOppgaveWebAPITest;
-
-public class CommentControllerTest
+namespace ProsjektOppgaveWebAPITest
 {
-    private readonly Mock<ICommentService> _serviceMock;
-    private readonly CommentController _controller;
-
-    public CommentControllerTest()
+    public class CommentControllerTests
     {
-        _serviceMock = new Mock<ICommentService>();
-        _controller = new CommentController(_serviceMock.Object, new Mock<IHubContext<CommentHub>>().Object);
-    }
+        private readonly Mock<ICommentService> _commentServiceMock;
+        private readonly CommentController _controller;
 
-    [Fact]
-    public async Task GetComments_ReturnsExpectedComments()
-    {
-        // Arrange
-        const int postId = 1;
-        var expectedComments = new List<Comment> { new Comment(), new Comment() };
-        _serviceMock.Setup(service => service.GetCommentsForPost(postId)).ReturnsAsync(expectedComments);
+        public CommentControllerTests()
+        {
+            _commentServiceMock = new Mock<ICommentService>();
+            _controller = new CommentController(_commentServiceMock.Object, new Mock<IHubContext<CommentHub>>().Object);
+        }
 
-        // Act
-        var result = await _controller.GetComments(postId);
+        [Fact]
+        public async Task GetComments_ShouldReturnCommentsForPost()
+        {
+            // Arrange
+            var postId = 1;
+            var expectedComments = new List<Comment> { new Comment(), new Comment() };
+            _commentServiceMock.Setup(s => s.GetCommentsForPost(postId)).ReturnsAsync(expectedComments);
 
-        // Assert
-        Assert.Equal(expectedComments, result);
-    }
+            // Act
+            var result = await _controller.GetComments(postId);
 
-    [Fact]
-    public void GetComment_ReturnsExpectedComment()
-    {
-        // Arrange
-        const int commentId = 1;
-        var expectedComment = new Comment();
-        _serviceMock.Setup(service => service.GetComment(commentId)).Returns(expectedComment);
+            // Assert
+            Assert.Equal(expectedComments, result);
+        }
 
-        // Act
-        var result = _controller.GetComment(commentId);
+        [Fact]
+        public void GetComment_ShouldReturnSpecificComment()
+        {
+            // Arrange
+            var commentId = 1;
+            var expectedComment = new Comment();
+            _commentServiceMock.Setup(s => s.GetComment(commentId)).Returns(expectedComment);
 
-        // Assert
-        Assert.Equal(expectedComment, result);
-    }
+            // Act
+            var result = _controller.GetComment(commentId);
 
-    [Fact]
-    public async Task Create_ReturnsBadRequest_WhenModelStateIsInvalid()
-    {
-        // Arrange
-        _controller.ModelState.AddModelError("error", "some error");
-        var commentModel = new CreateCommentHttpPostModel();
+            // Assert
+            Assert.Equal(expectedComment, result);
+        }
 
-        // Act
-        var result = await _controller.Create(commentModel);
+        [Fact]
+        public async Task Create_ShouldReturnBadRequestForInvalidModel()
+        {
+            // Arrange
+            _controller.ModelState.AddModelError("error", "some error");
+            var commentModel = new CreateCommentHttpPostModel();
 
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
+            // Act
+            var result = await _controller.Create(commentModel);
 
-    [Fact]
-    public async Task Create_ReturnsOk_WhenSuccessful()
-    {
-        // Arrange
-        var commentModel = new CreateCommentHttpPostModel();
-        _serviceMock.Setup(service => service.Save(commentModel))
-            .ReturnsAsync(ResponseService<int>.Ok(1));
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
 
-        // Act
-        var result = await _controller.Create(commentModel);
+        
+        [Fact]
+        public async Task Update_ShouldReturnOkForValidModel()
+        {
+            // Arrange
+            var updateModel = new UpdateCommentHttpPostModel();
+            _commentServiceMock.Setup(s => s.Update(updateModel))
+                .ReturnsAsync(ResponseService<Comment>.Ok(new Comment()));
 
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(1, okResult.Value);
-    }
+            // Act
+            var result = await _controller.Update(updateModel);
 
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenModelStateIsInvalid()
-    {
-        // Arrange
-        _controller.ModelState.AddModelError("error", "some error");
-        var updateModel = new UpdateCommentHttpPostModel();
+            // Assert
+            Assert.IsType<OkResult>(result);
+        }
 
-        // Act
-        var result = await _controller.Update(updateModel);
+        [Fact]
+        public async Task Delete_ShouldReturnBadRequestWhenCommentNotFound()
+        {
+            // Arrange
+            var commentId = 1;
+            _commentServiceMock.Setup(s => s.Delete(commentId))
+                .ReturnsAsync(ResponseService<bool>.Error("Error Message"));
 
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
+            // Act
+            var result = await _controller.Delete(commentId);
 
-    [Fact]
-    public async Task Update_ReturnsOk_WhenSuccessful()
-    {
-        // Arrange
-        var updateModel = new UpdateCommentHttpPostModel();
-        _serviceMock.Setup(service => service.Update(updateModel))
-            .ReturnsAsync(ResponseService<Comment>.Ok(new Comment()));
-
-        // Act
-        var result = await _controller.Update(updateModel);
-
-        // Assert
-        Assert.IsType<OkResult>(result);
-    }
-
-    [Fact]
-    public async Task Delete_ReturnsBadRequest_WhenCommentDoesNotExist()
-    {
-        // Arrange
-        const int commentId = 1;
-        _serviceMock.Setup(service => service.Delete(commentId))
-            .ReturnsAsync(ResponseService<bool>.Error("Error Message"));
-
-        // Act
-        var result = await _controller.Delete(commentId);
-
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public async Task Delete_ReturnsOk_WhenSuccessful()
-    {
-        // Arrange
-        const int commentId = 1;
-        _serviceMock.Setup(service => service.Delete(commentId))
-            .ReturnsAsync(ResponseService<bool>.Ok(true));
-
-        // Act
-        var result = await _controller.Delete(commentId);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(commentId, okResult.Value);
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }

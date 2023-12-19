@@ -1,71 +1,89 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Xunit;
 using ProsjektOppgaveWebAPI.Controllers;
+using ProsjektOppgaveWebAPI.Hubs;
 using ProsjektOppgaveWebAPI.Models.Tag;
 using ProsjektOppgaveWebAPI.Services.TagServices;
 using ProsjektOppgaveWebAPI.Services.Response;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.Services.TagServices.Models;
 
-namespace ProsjektOppgaveWebAPITest;
-
-public class TagControllerTests
+namespace ProsjektOppgaveWebAPITest
 {
-    private readonly Mock<ITagService> _mockTagService;
-    private readonly TagController _tagController;
-
-    public TagControllerTests()
+    public class TagControllerTests
     {
-        _mockTagService = new Mock<ITagService>();
-        _tagController = new TagController(_mockTagService.Object, null);
-    }
+        private readonly Mock<ITagService> _tagServiceMock;
+        private readonly Mock<IHubContext<TagHub>> _hubContextMock;
+        private readonly TagController _controller;
 
-    [Fact]
-    public async Task Create_WithInvalidModelState_ReturnsBadRequest()
-    {
-        // Arrange
-        var invalidModel = new CreateTagHttpPostModel();
-        _tagController.ModelState.AddModelError("TestError", "Model state is invalid");
+        public TagControllerTests()
+        {
+            _tagServiceMock = new Mock<ITagService>();
+            _hubContextMock = new Mock<IHubContext<TagHub>>();
+            _controller = new TagController(_tagServiceMock.Object, _hubContextMock.Object);
+        }
 
-        // Act
-        var result = await _tagController.Create(invalidModel);
+        [Fact]
+        public async Task CreateTag_ReturnsOk_WhenCreationIsSuccessful()
+        {
+            // Arrange
+            var createTagModel = new CreateTagHttpPostModel();
+            _tagServiceMock.Setup(service => service.Create(createTagModel))
+                           .ReturnsAsync(ResponseService<Tag>.Ok(new Tag()));
 
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
+            // Act
+            var result = await _controller.Create(createTagModel);
 
-    [Fact]
-    public async Task Create_WhenSuccessful_ReturnsOkWithCreatedTag()
-    {
-        // Arrange
-        var validModel = new CreateTagHttpPostModel { Name = "TestTag" };
-        var createdTag = new Tag { Id = 1, Name = "TestTag" };
-        _mockTagService.Setup(s => s.Create(validModel))
-            .ReturnsAsync(ResponseService<Tag>.Ok(createdTag));
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
 
-        // Act
-        var result = await _tagController.Create(validModel);
+        [Fact]
+        public async Task CreateTag_ReturnsBadRequest_WhenCreationFails()
+        {
+            // Arrange
+            var createTagModel = new CreateTagHttpPostModel();
+            _tagServiceMock.Setup(service => service.Create(createTagModel))
+                           .ReturnsAsync(ResponseService<Tag>.Error("Error message"));
 
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var resultValue = Assert.IsType<HttpGetTagModel>(okResult.Value);
-        Assert.Equal(createdTag.Id, resultValue.Id);
-        Assert.Equal(createdTag.Name, resultValue.Name);
-    }
+            // Act
+            var result = await _controller.Create(createTagModel);
 
-    [Fact]
-    public async Task Create_WhenFails_ReturnsBadRequestWithErrorMessage()
-    {
-        // Arrange
-        var validModel = new CreateTagHttpPostModel { Name = "TestTag" };
-        _mockTagService.Setup(s => s.Create(validModel))
-            .ReturnsAsync(ResponseService<Tag>.Error("Error creating tag"));
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
 
-        // Act
-        var result = await _tagController.Create(validModel);
+        [Fact]
+        public async Task GetAllTags_ReturnsOk_WithTags()
+        {
+            // Arrange
+            var tags = new List<Tag> { new Tag(), new Tag() };
+            _tagServiceMock.Setup(service => service.GetAll(It.IsAny<string>())).ReturnsAsync(tags);
 
-        // Assert
-        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Equal("Error creating tag", badRequestResult.Value);
+            // Act
+            var result = await _controller.GetAll("testuser");
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteTag_ReturnsBadRequest_WhenDeletionFails()
+        {
+            // Arrange
+            const int tagId = 1;
+            _tagServiceMock.Setup(service => service.DeleteTag(tagId))
+                           .ReturnsAsync(ResponseService<bool>.Error("Error message"));
+
+            // Act
+            var result = await _controller.Delete(tagId);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }

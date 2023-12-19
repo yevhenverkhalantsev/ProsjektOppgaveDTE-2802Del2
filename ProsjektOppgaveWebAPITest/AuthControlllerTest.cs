@@ -24,26 +24,28 @@ public class AuthControllerTest
     }
 
     [Fact]
-    public async Task Login_ReturnsOk_WhenValidCredentials()
+    public async Task Login_WithValidCredentials_ReturnsOkResult()
     {
         // Arrange
-        var loginViewModel = new LoginViewModel { Username = "testuser", Password = "password" };
-        var identityUser = new IdentityUser { UserName = loginViewModel.Username };
-        _userManagerMock.Setup(x => x.FindByNameAsync(loginViewModel.Username)).ReturnsAsync(identityUser);
-        _userManagerMock.Setup(x => x.CheckPasswordAsync(identityUser, loginViewModel.Password)).ReturnsAsync(true);
+        var validLoginModel = new LoginViewModel { Username = "testuser", Password = "111!Qpassword" };
+        var user = new IdentityUser { UserName = validLoginModel.Username };
+        _userManagerMock.Setup(um => um.FindByNameAsync(validLoginModel.Username)).ReturnsAsync(user);
+        _userManagerMock.Setup(um => um.CheckPasswordAsync(user, validLoginModel.Password)).ReturnsAsync(true);
 
         // Act
-        var result = await _controller.Login(loginViewModel);
+        var actionResult = await _controller.Login(validLoginModel);
 
         // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
+        var okResult = Assert.IsType<OkObjectResult>(actionResult);
     }
+
+
 
     [Fact]
     public async Task Login_ReturnsUnauthorized_WhenInvalidCredentials()
     {
         // Arrange
-        var loginViewModel = new LoginViewModel { Username = "testuser", Password = "wrongpassword" };
+        var loginViewModel = new LoginViewModel { Username = "testuser", Password = "!Wrongpassword1111" };
         var identityUser = new IdentityUser { UserName = loginViewModel.Username };
         _userManagerMock.Setup(x => x.FindByNameAsync(loginViewModel.Username)).ReturnsAsync(identityUser);
         _userManagerMock.Setup(x => x.CheckPasswordAsync(identityUser, loginViewModel.Password)).ReturnsAsync(false);
